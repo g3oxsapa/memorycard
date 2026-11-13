@@ -28,12 +28,12 @@ html = (HERE.parent / "static" / "index.html").read_text()
 body = html[html.index('<div class="layout">'):html.index('<script src="/app.js">')]
 body = body.replace('<img src="/icons/icon.svg" alt="">', (HERE.parent / "static" / "icons" / "icon.svg").read_text().strip())
 for a, b in [('href="#/" data-route="home"', 'href="#" data-route="home"'), ('href="#/batches"', 'href="#batches"'),
-             ('href="#/stock"', 'href="#stock"'), ('href="#/sales"', 'href="#sales"'),
+             ('href="#/stock"', 'href="#stock"'), ('href="#/sales"', 'href="#sales"'), ('href="#/reply"', 'href="#reply"'),
              ('href="#/settings" data-route="settings"', 'href="#options" data-route="options"')]:
     assert a in body, a
     body = body.replace(a, b)
 
-js = (HERE / "store.js").read_text() + "\n" + (HERE / "ui.js").read_text()
+js = (HERE / "store.js").read_text() + "\n" + (HERE / "reply.js").read_text() + "\n" + (HERE / "ui.js").read_text()
 out = f"""<title>Товарка</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">

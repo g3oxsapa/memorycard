@@ -261,3 +261,14 @@ table.t td input { padding: 6px 8px; }
 .toast { display: flex; align-items: center; gap: 14px; width: max-content; }
 .toast-btn { border: 0; background: var(--tape); color: var(--tape-ink); padding: 6px 10px; font-size: 13px; flex: none; }
 .toast-btn:hover { background: var(--tape); filter: brightness(.95); }
+
+/* ── ответ покупателю ── */
+.reply-grid { display: grid; gap: 10px; }
+@media (min-width: 900px) { .reply-grid { grid-template-columns: minmax(0, 1fr) 300px; align-items: start; } }
+.reply-out { margin-top: 16px; padding-top: 16px; border-top: 1px dashed var(--line); }
+.r-shot { height: 44px; width: auto; border: 1px solid var(--line); border-radius: 2px; }
+label.btn { cursor: pointer; }
+.rules summary { cursor: pointer; font: 500 12px var(--f-mono); text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+.rules[open] summary { color: var(--ink); }
+.nav a span { white-space: nowrap; }
+@media (max-width: 420px) { .nav a { font-size: 10px; } }

@@ -74,6 +74,7 @@ const routes = [
   [/^batches$/, 'batches', viewBatches],
   [/^batch-(.+)$/, 'batches', viewBatch],
   [/^stock$/, 'stock', viewStock],
+  [/^reply$/, 'reply', viewReply],
   [/^sales$/, 'sales', viewSales],
   [/^options$/, 'options', viewSettings],
 ];
@@ -106,6 +107,7 @@ function onStoreChange() {
   renderTimer = setTimeout(() => {
     const a = document.activeElement;
     if (a && view.contains(a) && /INPUT|SELECT|TEXTAREA/.test(a.tagName)) { a.addEventListener('blur', onStoreChange, { once: true }); return; }
+    if (location.hash === '#reply' && current) return; // не мешаем, пока пишется ответ
     if (!current || !S.ready) render(); else rerender();
   }, 120);
 }
@@ -635,5 +637,6 @@ render();
   DB = c ? await c.use('db') : null;
   if (!DB) { S.failed = 'Открой эту страницу на claude.ai под своим аккаунтом — там хранятся твои данные.'; render(); return; }
   ASSETS = await c.use('assets');
+  c.use('sample').then((s) => { SAMPLE = s; if (location.hash === '#reply') rerender(); });
   connectStore(onStoreChange);
 })();
