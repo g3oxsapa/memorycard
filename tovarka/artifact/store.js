@@ -283,11 +283,12 @@ const ops = {
     const available = free + (b.from_reserved ? it.reserved || 0 : 0);
     if (qty > available) fail(`В наличии только ${Math.max(available, 0)} шт`);
     if (b.from_reserved) await patch('items', itemId, { reserved: Math.max((it.reserved || 0) - qty, 0) });
-    await put('sales', newId('sales'), {
+    const saleId = newId('sales');
+    await put('sales', saleId, {
       item_id: itemId, qty, price: b.price ?? it.sell_price, extra_cost: b.extra_cost || 0,
       sold_at: b.sold_at || nowIso(), channel: b.channel || 'Авито', note: b.note || '', returned: false,
     });
-    return batchFull(it.batch_id);
+    return { ...batchFull(it.batch_id), sale_id: saleId };
   },
   sales() {
     const costs = {};

@@ -254,3 +254,32 @@ table.t td input { padding: 6px 8px; }
 }
 .toast[hidden] { display: none; }
 @media (min-width: 900px) { .toast { bottom: 24px; } }
+
+/* ── склад: группы по модели ── */
+.stock-sum { display: flex; gap: 14px; flex-wrap: wrap; color: var(--muted); }
+.stock-sum b { color: var(--ink); font-weight: 500; }
+.stock-tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 16px; }
+.stock-tools .search { flex: 1 1 220px; max-width: none; }
+.stock-tools select { width: auto; padding: 8px 10px; font-size: 13px; }
+.sgroup { padding: 0; overflow: hidden; }
+.sgroup + .sgroup { margin-top: 10px; }
+.sgroup-head { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-bottom: 1px solid var(--ink); }
+.sgroup-info { flex: 1; min-width: 0; }
+.sgroup-title { font-weight: 600; font-size: 16px; }
+.count { display: flex; align-items: baseline; gap: 3px; justify-content: flex-end; min-width: 52px; }
+.count b { font: 500 24px/1 var(--f-mono); letter-spacing: -.03em; }
+.count span { font: 11px var(--f-mono); color: var(--muted); }
+.count.zero b { color: var(--muted); }
+.srow { display: grid; grid-template-columns: 56px minmax(0, 1fr) auto; gap: 4px 12px; align-items: center; padding: 12px 14px; }
+.srow + .srow { border-top: 1px solid var(--line); }
+.srow.soldout { opacity: .5; }
+.thumb.sm { width: 56px; height: 56px; font-size: 9px; grid-row: span 2; align-self: start; }
+.srow-main { border: 0; background: transparent; padding: 0; text-align: left; display: flex; flex-direction: column; align-items: flex-start; gap: 5px; font-weight: 400; cursor: pointer; min-width: 0; }
+.srow-main:hover { background: transparent; }
+.srow-name { font-weight: 600; font-size: 15px; }
+.srow-actions { grid-column: 2 / -1; display: flex; gap: 6px; flex-wrap: wrap; }
+button.ghost { border-color: transparent; color: var(--muted); }
+button.ghost:hover { color: var(--ink); }
+.toast { display: flex; align-items: center; gap: 14px; width: max-content; }
+.toast-btn { border: 0; background: var(--tape); color: var(--tape-ink); padding: 6px 10px; font-size: 13px; flex: none; }
+.toast-btn:hover { background: var(--tape); filter: brightness(.95); }
