@@ -1,14 +1,10 @@
 @echo off
-chcp 65001 >nul
 cd /d "%~dp0"
-if not exist .venv (
-  echo Первый запуск: ставлю зависимости...
-  python -m venv .venv
-  .venv\Scripts\pip install -r requirements.txt
-)
+where py >nul 2>nul && (py -3 start.py & goto :end)
+where python >nul 2>nul && (python start.py & goto :end)
 echo.
-echo Товарка запущена: http://localhost:8000
-echo С телефона (та же Wi-Fi): http://IP-компьютера:8000
-echo Закрой это окно, чтобы остановить.
-start "" http://localhost:8000
-.venv\Scripts\python -m uvicorn app.main:app --host 0.0.0.0 --port 8000
+echo Python not found. Install it from https://www.python.org/downloads/
+echo IMPORTANT: tick "Add python.exe to PATH" during install, then run this file again.
+echo.
+pause
+:end
