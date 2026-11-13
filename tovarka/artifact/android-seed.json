@@ -1,0 +1,125 @@
+{
+ "app/settings": {
+  "cny_markup": 0.5,
+  "usd_rate": 89.5,
+  "cargo_usd_per_kg": 2.9,
+  "rf_delivery_rub": 2000,
+  "stale_days": 14,
+  "cny_cbr": 12.3149,
+  "cny_cbr_date": "2026-11-14"
+ },
+ "categories/c1": {
+  "name": "Футболка",
+  "weight_kg": 0.3,
+  "default_price": 2000,
+  "sort": 0
+ },
+ "categories/c2": {
+  "name": "Худи / свитшот",
+  "weight_kg": 0.8,
+  "default_price": 3000,
+  "sort": 1
+ },
+ "categories/c3": {
+  "name": "Штаны",
+  "weight_kg": 0.6,
+  "default_price": 2500,
+  "sort": 2
+ },
+ "categories/c4": {
+  "name": "Куртка / ветровка",
+  "weight_kg": 1.0,
+  "default_price": 3500,
+  "sort": 3
+ },
+ "categories/c5": {
+  "name": "Пуховик",
+  "weight_kg": 1.5,
+  "default_price": 4000,
+  "sort": 4
+ },
+ "categories/c6": {
+  "name": "Обувь (с коробкой)",
+  "weight_kg": 1.5,
+  "default_price": 4000,
+  "sort": 5
+ },
+ "categories/c7": {
+  "name": "Аксессуары",
+  "weight_kg": 0.2,
+  "default_price": 1000,
+  "sort": 6
+ },
+ "batches/b1": {
+  "name": "Партия №1",
+  "status": "received",
+  "created_at": "2026-11-13 18:00:00",
+  "received_at": "2026-11-13 18:00:00",
+  "cny_cbr": 12.3149,
+  "cny_markup": 0.5,
+  "usd_rate": 89.5,
+  "cargo_usd_per_kg": 2.9,
+  "rf_delivery_rub": 2000,
+  "note": ""
+ },
+ "items/i1": {
+  "batch_id": "b1",
+  "buy_cny": 72,
+  "category_id": "c2",
+  "color": "серый",
+  "created_at": "2026-11-13 18:00:01",
+  "listed": true,
+  "note": "",
+  "qty": 3,
+  "reserved": 0,
+  "sell_price": 3000,
+  "size": "",
+  "title": "Chrome Hearts Matty Boy",
+  "weight_kg": 0.8
+ },
+ "items/i2": {
+  "batch_id": "b1",
+  "buy_cny": 72,
+  "category_id": "c2",
+  "color": "синий",
+  "created_at": "2026-11-13 18:00:02",
+  "listed": false,
+  "note": "",
+  "qty": 3,
+  "reserved": 0,
+  "sell_price": 3000,
+  "size": "",
+  "title": "Chrome Hearts Matty Boy",
+  "weight_kg": 0.8
+ },
+ "items/i3": {
+  "batch_id": "b1",
+  "buy_cny": 69,
+  "category_id": "c2",
+  "color": "",
+  "created_at": "2026-11-13 18:00:03",
+  "listed": false,
+  "note": "",
+  "qty": 3,
+  "reserved": 0,
+  "sell_price": 3000,
+  "size": "",
+  "title": "Stone Island «зебра»",
+  "weight_kg": 0.8
+ },
+ "items/i4": {
+  "batch_id": "b1",
+  "buy_cny": 140,
+  "category_id": "c5",
+  "color": "",
+  "created_at": "2026-11-13 18:00:04",
+  "listed": false,
+  "note": "",
+  "qty": 1,
+  "reserved": 0,
+  "sell_price": 4000,
+  "size": "",
+  "title": "C.P. Company пуховик",
+  "weight_kg": 1.5
+ }
+}

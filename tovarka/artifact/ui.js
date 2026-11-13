@@ -74,7 +74,6 @@ const routes = [
   [/^batches$/, 'batches', viewBatches],
   [/^batch-(.+)$/, 'batches', viewBatch],
   [/^stock$/, 'stock', viewStock],
-  [/^reply$/, 'reply', viewReply],
   [/^sales$/, 'sales', viewSales],
   [/^options$/, 'options', viewSettings],
 ];
@@ -107,7 +106,6 @@ function onStoreChange() {
   renderTimer = setTimeout(() => {
     const a = document.activeElement;
     if (a && view.contains(a) && /INPUT|SELECT|TEXTAREA/.test(a.tagName)) { a.addEventListener('blur', onStoreChange, { once: true }); return; }
-    if (location.hash === '#reply' && current) return; // не мешаем, пока пишется ответ
     if (!current || !S.ready) render(); else rerender();
   }, 120);
 }
@@ -583,7 +581,7 @@ async function viewSettings() {
         <label class="f"><span>Юань ЦБ, ₽</span><input name="cny_cbr" type="number" step="0.0001" min="0" value="${s.cny_cbr}"></label>
         <label class="f"><span>Наценка к юаню, ₽</span><input name="cny_markup" type="number" step="0.01" value="${s.cny_markup}"></label>
       </div>
-      <p class="hint-line">Курс для выкупа: <b>${nf2.format(s.cny_rate)} ₽</b> за 1 ¥ · ${s.cny_cbr_date ? `обновлён ${esc(s.cny_cbr_date)}` : 'ещё не обновлялся'} · <a href="https://www.cbr.ru/currency_base/daily/" target="_blank" rel="noopener">курс на сайте ЦБ</a></p>
+      <p class="hint-line">Курс для выкупа: <b>${nf2.format(s.cny_rate)} ₽</b> за 1 ¥ · ${s.cny_cbr_date ? `обновлён ${esc(s.cny_cbr_date)}` : 'ещё не обновлялся'}${window.Android ? ' · <a href="#" id="refresh-rate">обновить с ЦБ</a>' : ''}</p>
       <div class="f-row">
         <label class="f"><span>Доллар у карго, ₽</span><input name="usd_rate" type="number" step="0.01" min="0" value="${s.usd_rate}"></label>
         <label class="f"><span>Карго, $ за кг</span><input name="cargo_usd_per_kg" type="number" step="0.01" min="0" value="${s.cargo_usd_per_kg}"></label>
@@ -592,7 +590,7 @@ async function viewSettings() {
         <label class="f"><span>Доставка по РФ на посылку, ₽</span><input name="rf_delivery_rub" type="number" step="1" min="0" value="${s.rf_delivery_rub}"></label>
         <label class="f"><span>Залежался через, дней</span><input name="stale_days" type="number" step="1" min="1" value="${s.stale_days}"></label>
       </div>
-      <p class="hint-line">Курс ЦБ обновляется сам каждое утро. Можно поправить вручную. Новые значения применяются к новым партиям. У существующей партии курсы меняются в её «Курсах и настройках».</p>
+      <p class="hint-line">Курс ЦБ обновляется сам при каждом запуске, если есть интернет. Можно поправить вручную. Новые значения применяются к новым партиям. У существующей партии курсы меняются в её «Курсах и настройках».</p>
       <button class="primary">Сохранить</button>
     </form>
 
@@ -608,8 +606,8 @@ async function viewSettings() {
       <p class="hint-line" style="margin-top:8px">Меняется сразу при выходе из поля. Вес у уже добавленных товаров не меняется — его можно поправить в самом товаре.</p>
     </div>
 
-    <div class="section"><h3>Как открыть с телефона</h3><div class="card small">
-      <p style="margin:0">Открой эту же страницу в приложении Claude на телефоне: раздел с артефактами или ссылка из чата. Данные общие — что вбил на ПК, сразу видно на телефоне.</p>
+    <div class="section"><h3>Данные</h3><div class="card small">
+      <p style="margin:0">Партии, продажи и фото хранятся в памяти телефона. Если удалить приложение, они удалятся вместе с ним.</p>
     </div></div>`;
 
   $('#setf').onsubmit = guard(async (e) => {
@@ -627,16 +625,33 @@ async function viewSettings() {
   });
   $$('[data-del-cat]').forEach((x) => (x.onclick = guard(async () => { if (!(await ask('Удалить этот тип вещи? Товары останутся.'))) return; await api('delCategory', x.dataset.delCat); rerender(); })));
   $('#add-cat').onclick = guard(async () => { await api('addCategory', { name: 'Новый тип', weight_kg: 0.5, default_price: 0 }); rerender(); });
+  $('#refresh-rate')?.addEventListener('click', guard(async (e) => {
+    e.preventDefault();
+    const r = await refreshCbrRate(window.Android);
+    toast(`Курс ЦБ: ${nf2.format(r.rate)} ₽ на ${r.date}`); rerender();
+  }));
   $('#add-default-cats')?.addEventListener('click', guard(async () => { await api('addDefaultCategories'); toast('Типы добавлены'); rerender(); }));
 }
 
 /* ───────────── запуск ───────────── */
+// Кнопка «Назад» на Android: сначала закрывает фото и окна, потом листает назад.
+window.__onBack = () => {
+  if (!$('#lightbox').hidden) { $('#lightbox').hidden = true; return true; }
+  if (!$('#sheet').hidden) { closeSheet(); return true; }
+  return false;
+};
 render();
 (async () => {
+  if (window.Android) {
+    DB = makeLocalDb(window.Android, typeof SEED_DOCS === 'undefined' ? null : SEED_DOCS);
+    ASSETS = makeLocalAssets(window.Android);
+    connectStore(onStoreChange);
+    setTimeout(() => refreshCbrRate(window.Android, { quiet: true }).catch(() => {}), 300);
+    return;
+  }
   const c = window.claude;
   DB = c ? await c.use('db') : null;
   if (!DB) { S.failed = 'Открой эту страницу на claude.ai под своим аккаунтом — там хранятся твои данные.'; render(); return; }
   ASSETS = await c.use('assets');
-  c.use('sample').then((s) => { SAMPLE = s; if (location.hash === '#reply') rerender(); });
   connectStore(onStoreChange);
 })();

@@ -12,7 +12,6 @@ const S = { settings: {}, ready: false, failed: '' };
 COLLS.forEach((c) => (S[c] = new Map()));
 let DB = null;
 let ASSETS = null;
-let SAMPLE = null;
 
 const r2 = (x) => Math.round((x + Number.EPSILON) * 100) / 100;
 const pad = (n) => String(n).padStart(2, '0');

@@ -1,4 +1,8 @@
-"""Собирает однофайловую версию для claude.ai: artifact/dist/tovarka.html."""
+"""Собирает интерфейс Товарки:
+  artifact/dist/tovarka.html            — версия для claude.ai
+  android/app/src/main/assets/index.html — версия для Android-приложения (данные в телефоне)
+"""
+import json
 from pathlib import Path
 
 HERE = Path(__file__).parent
@@ -28,12 +32,12 @@ html = (HERE.parent / "static" / "index.html").read_text()
 body = html[html.index('<div class="layout">'):html.index('<script src="/app.js">')]
 body = body.replace('<img src="/icons/icon.svg" alt="">', (HERE.parent / "static" / "icons" / "icon.svg").read_text().strip())
 for a, b in [('href="#/" data-route="home"', 'href="#" data-route="home"'), ('href="#/batches"', 'href="#batches"'),
-             ('href="#/stock"', 'href="#stock"'), ('href="#/sales"', 'href="#sales"'), ('href="#/reply"', 'href="#reply"'),
+             ('href="#/stock"', 'href="#stock"'), ('href="#/sales"', 'href="#sales"'),
              ('href="#/settings" data-route="settings"', 'href="#options" data-route="options"')]:
     assert a in body, a
     body = body.replace(a, b)
 
-js = (HERE / "store.js").read_text() + "\n" + (HERE / "reply.js").read_text() + "\n" + (HERE / "ui.js").read_text()
+js = (HERE / "store.js").read_text() + "\n" + (HERE / "ui.js").read_text()
 out = f"""<title>Товарка</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -49,3 +53,33 @@ out = f"""<title>Товарка</title>
 (HERE / "dist").mkdir(exist_ok=True)
 (HERE / "dist" / "tovarka.html").write_text(out)
 print("ok", len(out))
+
+# ── Android ──
+android_assets = HERE.parent / "android" / "app" / "src" / "main" / "assets"
+fonts_css = (android_assets / "fonts" / "fonts.css").read_text()
+seed = json.loads((HERE / "android-seed.json").read_text())
+android_js = ((HERE / "store.js").read_text() + "\n" + (HERE / "local.js").read_text() + "\n"
+              + "const SEED_DOCS = " + json.dumps(seed, ensure_ascii=False) + ";\n" + (HERE / "ui.js").read_text())
+android_html = f"""<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>Товарка</title>
+<style>
+{fonts_css}
+[hidden] {{ display: none !important; }}
+img {{ max-width: 100%; }}
+{css}
+</style>
+</head>
+<body>
+{body}<script>
+{android_js}
+</script>
+</body>
+</html>
+"""
+(android_assets / "index.html").write_text(android_html)
+print("android ok", len(android_html))
