@@ -456,11 +456,6 @@ async function expenseForm(batchId) {
 /* ───────────── склад ───────────── */
 let stockFilter = 'in';
 let stockQuery = '';
-let stockCat = '';
-let stockSort = 'name';
-
-const variantName = (i) => [i.color, i.size && `р. ${i.size}`].filter(Boolean).join(' · ');
-
 async function quickSell(i) {
   const fromReserved = i.calc.stock === 0 && i.calc.reserved > 0;
   const r = await api('createSale', i.id, { qty: 1, price: i.sell_price, extra_cost: 0, from_reserved: fromReserved });
@@ -478,97 +473,40 @@ async function quickSell(i) {
 
 async function viewStock() {
   const all = await api('stock');
-  const cats = [...new Map(all.filter((i) => i.category).map((i) => [i.category_id, i.category])).entries()];
   const draw = () => {
     const q = stockQuery.trim().toLowerCase();
-    const list = all.filter((i) => {
-      const c = i.calc;
-      if (stockFilter === 'in' && c.stock + c.reserved === 0) return false;
-      if (stockFilter === 'reserved' && !c.reserved) return false;
-      if (stockFilter === 'stale' && !i.stale) return false;
-      if (stockCat && i.category_id !== stockCat) return false;
-      return !q || itemName(i).toLowerCase().includes(q);
+    const list = all.filter((i) => (stockFilter === 'all' || (stockFilter === 'in' ? i.calc.stock + i.calc.reserved > 0 : i.stale))
+      && (!q || itemName(i).toLowerCase().includes(q)));
+    const units = list.reduce((s, i) => s + i.calc.stock, 0);
+    const reservedUnits = list.reduce((s, i) => s + i.calc.reserved, 0);
+    const value = list.reduce((s, i) => s + i.calc.stock * i.sell_price, 0);
+    $('#stock-list').innerHTML = list.length ? `<div class="stock-grid">${list.map((i) => `
+      <div class="card tile ${i.calc.stock + i.calc.reserved ? '' : 'soldout'}" data-open="${i.id}" role="button" tabindex="0">
+        <div class="ph">${i.photos[0] ? `<img src="${i.photos[0].url}" alt="" loading="lazy">` : 'нет фото'}</div>
+        <div class="body"><div class="t">${esc(itemName(i))}</div>
+          <div class="p num">${rub(i.sell_price)}</div>
+          <div class="chips" style="margin-top:6px"><span class="chip ${i.calc.stock ? 'ok' : ''}">${i.calc.stock ? `${i.calc.stock} шт` : 'нет'}</span>
+            ${i.calc.reserved ? `<span class="chip accent">бронь ${i.calc.reserved}</span>` : ''}${i.batch_status === 'transit' ? '<span class="chip">в пути</span>' : ''}
+            ${i.stale ? `<span class="chip warn">${i.days_in_stock} дн.</span>` : ''}${i.listed ? '<span class="chip">на Авито</span>' : ''}</div>
+          ${i.calc.stock + i.calc.reserved ? `<button class="sm primary block tile-sell" data-qsell="${i.id}">Продал 1 шт</button>` : ''}</div>
+      </div>`).join('')}</div>` : '<div class="card empty"><b>Ничего не нашлось</b>Попробуй другой фильтр</div>';
+    $('#stock-count').innerHTML = `<b class="num">${units}</b> шт свободно · <b class="num">${reservedUnits}</b> в брони · на <b class="num">${rub(value)}</b>`;
+    $$('[data-open]').forEach((x) => {
+      const open = () => stockItemSheet(all.find((i) => String(i.id) === x.dataset.open));
+      x.onclick = (e) => { if (!e.target.closest('[data-qsell]')) open(); };
+      x.onkeydown = (e) => { if (e.key === 'Enter' && e.target === x) open(); };
     });
-    // группы по модели
-    const groups = new Map();
-    for (const i of list) {
-      const key = i.title.trim().toLowerCase();
-      if (!groups.has(key)) groups.set(key, { title: i.title, items: [] });
-      groups.get(key).items.push(i);
-    }
-    const sum = (g, k) => g.items.reduce((a, i) => a + i.calc[k], 0);
-    const age = (g) => Math.max(...g.items.map((i) => i.days_in_stock || 0));
-    const arr = [...groups.values()];
-    arr.forEach((g) => g.items.sort((a, b) => variantName(a).localeCompare(variantName(b), 'ru')));
-    if (stockSort === 'name') arr.sort((a, b) => a.title.localeCompare(b.title, 'ru'));
-    if (stockSort === 'most') arr.sort((a, b) => sum(b, 'stock') - sum(a, 'stock'));
-    if (stockSort === 'old') arr.sort((a, b) => age(b) - age(a));
-
-    const units = list.reduce((a, i) => a + i.calc.stock, 0);
-    const reserved = list.reduce((a, i) => a + i.calc.reserved, 0);
-    const value = list.reduce((a, i) => a + i.calc.stock * i.sell_price, 0);
-    $('#stock-sum').innerHTML = `<span><b class="num">${units}</b> шт свободно</span><span><b class="num">${reserved}</b> в брони</span><span>на <b class="num">${rub(value)}</b></span>`;
-
-    $('#stock-list').innerHTML = arr.length ? arr.map((g) => {
-      const first = g.items[0];
-      const prices = [...new Set(g.items.map((i) => i.sell_price))];
-      return `<section class="card sgroup">
-        <header class="sgroup-head">
-          <div class="sgroup-info"><div class="sgroup-title">${esc(g.title)}</div>
-            <div class="small muted">${esc(first.category || 'без типа')} · ${prices.length === 1 ? rub(prices[0]) : 'разные цены'} · себест. ${rub(first.calc.unit_cost_rub)}</div></div>
-          <div class="count"><b class="num">${sum(g, 'stock')}</b><span>шт</span></div>
-        </header>
-        ${g.items.map((i) => {
-          const c = i.calc;
-          const left = c.stock + c.reserved;
-          return `<div class="srow ${left ? '' : 'soldout'}">
-            <button class="thumb sm" data-ph="${i.id}" aria-label="Фото">${i.photos[0] ? `<img src="${i.photos[0].url}" alt="" loading="lazy">` : 'нет<br>фото'}</button>
-            <button class="srow-main" data-open="${i.id}">
-              <span class="srow-name">${variantName(i) ? esc(variantName(i)) : '<span class="muted">цвет и размер не указаны</span>'}</span>
-              <span class="chips">
-                ${c.reserved ? `<span class="chip accent">бронь ${c.reserved}</span>` : ''}
-                ${prices.length > 1 ? `<span class="chip">${rub(i.sell_price)}</span>` : ''}
-                ${i.batch_status === 'transit' ? '<span class="chip">в пути</span>' : ''}
-                ${i.stale ? `<span class="chip warn">${i.days_in_stock} дн.</span>` : ''}
-                ${i.listed ? '<span class="chip">на Авито</span>' : ''}
-                ${left ? '' : '<span class="chip">продано всё</span>'}
-              </span>
-            </button>
-            <div class="count ${c.stock ? '' : 'zero'}"><b class="num">${c.stock}</b><span>шт</span></div>
-            <div class="srow-actions">
-              <button class="sm primary" data-qsell="${i.id}" ${left ? '' : 'disabled'}>Продал 1</button>
-              <button class="sm" data-res="${i.id}" ${c.stock ? '' : 'disabled'}>+ Бронь</button>
-              ${c.reserved ? `<button class="sm" data-unres="${i.id}" aria-label="Снять бронь" title="Снять бронь">−</button>` : ''}
-              <button class="sm ghost" data-open="${i.id}">Ещё</button>
-            </div>
-          </div>`;
-        }).join('')}
-      </section>`;
-    }).join('') : `<div class="card empty"><b>${all.length ? 'Ничего не нашлось' : 'Склад пуст'}</b>${all.length ? 'Попробуй другой фильтр или поиск' : '<a href="#batches">Добавь товары в партию</a>'}</div>`;
-
-    const byId = Object.fromEntries(all.map((i) => [i.id, i]));
-    $$('#stock-list [data-open]').forEach((x) => (x.onclick = () => stockItemSheet(byId[x.dataset.open])));
-    $$('#stock-list [data-ph]').forEach((x) => (x.onclick = () => photosSheet(byId[x.dataset.ph])));
-    $$('#stock-list [data-qsell]').forEach((x) => (x.onclick = guard(async () => { x.disabled = true; await quickSell(byId[x.dataset.qsell]); })));
-    $$('#stock-list [data-res]').forEach((x) => (x.onclick = guard(async () => { const i = byId[x.dataset.res]; await api('saveItem', i.id, { reserved: i.calc.reserved + 1 }); toast(`Забронировано: ${itemName(i)}`); rerender(); })));
-    $$('#stock-list [data-unres]').forEach((x) => (x.onclick = guard(async () => { const i = byId[x.dataset.unres]; await api('saveItem', i.id, { reserved: i.calc.reserved - 1 }); toast('Бронь снята'); rerender(); })));
+    $$('[data-qsell]').forEach((x) => (x.onclick = guard(async () => { x.disabled = true; await quickSell(all.find((i) => String(i.id) === x.dataset.qsell)); })));
   };
-
   view.innerHTML = `
-    <div class="page-head"><h1>Склад</h1><div class="stock-sum small" id="stock-sum"></div></div>
-    <div class="stock-tools">
-      <input class="search" type="search" placeholder="Поиск по модели или цвету" value="${esc(stockQuery)}" id="q" aria-label="Поиск">
-      <div class="seg" id="seg">${[['in', 'В наличии'], ['reserved', 'Бронь'], ['stale', 'Залежались'], ['all', 'Все']].map(([k, t]) => `<button data-f="${k}" class="${stockFilter === k ? 'on' : ''}">${t}</button>`).join('')}</div>
-      <div class="row">
-        ${cats.length > 1 ? `<select id="cat" aria-label="Тип вещи"><option value="">Все типы</option>${cats.map(([id, n]) => `<option value="${id}" ${stockCat === id ? 'selected' : ''}>${esc(n)}</option>`).join('')}</select>` : ''}
-        <select id="sort" aria-label="Сортировка">${[['name', 'По названию'], ['most', 'Больше всего осталось'], ['old', 'Дольше всего лежат']].map(([k, t]) => `<option value="${k}" ${stockSort === k ? 'selected' : ''}>${t}</option>`).join('')}</select>
-      </div>
+    <div class="page-head"><h1>Склад</h1><span class="small muted stock-count" id="stock-count"></span></div>
+    <div class="row" style="margin-bottom:14px">
+      <div class="seg" id="seg">${[['in', 'В наличии'], ['stale', 'Залежались'], ['all', 'Все']].map(([k, t]) => `<button data-f="${k}" class="${stockFilter === k ? 'on' : ''}">${t}</button>`).join('')}</div>
+      <input class="search" type="search" placeholder="Поиск…" value="${esc(stockQuery)}" id="q">
     </div>
     <div id="stock-list"></div>`;
   $$('#seg button').forEach((x) => (x.onclick = () => { stockFilter = x.dataset.f; $$('#seg button').forEach((y) => y.classList.toggle('on', y === x)); draw(); }));
   $('#q').oninput = (e) => { stockQuery = e.target.value; draw(); };
-  $('#cat')?.addEventListener('change', (e) => { stockCat = e.target.value; draw(); });
-  $('#sort').onchange = (e) => { stockSort = e.target.value; draw(); };
   draw();
 }
 
@@ -578,24 +516,26 @@ function stockItemSheet(i) {
     ${i.photos.length ? `<div class="photos" style="margin-bottom:14px">${i.photos.map((p) => `<div class="ph"><img src="${p.url}" alt="" data-full="${p.url}"></div>`).join('')}</div>` : ''}
     <div class="calc">
       <span class="k">Партия</span><span class="v"><a href="#batch-${i.batch_id}">${esc(i.batch_name)}</a></span>
-      <span class="k">Свободно</span><span class="v">${c.stock} из ${i.qty} шт</span>
+      <span class="k">В наличии</span><span class="v">${c.stock} из ${i.qty} шт</span>
       <span class="k">В брони</span><span class="v">${c.reserved} шт</span>
       <span class="k">Продано</span><span class="v">${c.sold} шт</span>
       <span class="k">Себестоимость</span><span class="v">${rub(c.unit_cost_rub)}</span>
       <span class="k">Цена продажи</span><span class="v">${rub(i.sell_price)}</span>
       <span class="k">Прибыль с 1 шт</span><span class="v">${rubS(c.unit_margin_rub)}</span>
-      ${i.days_in_stock ? `<span class="k">На складе</span><span class="v">${i.days_in_stock} дн.</span>` : ''}
     </div>
     <div class="row" style="margin-top:16px">
-      <button class="primary" id="s-sell" ${c.stock + c.reserved ? '' : 'disabled'}>Продал: указать цену и кол-во</button>
+      <button class="primary" id="s-sell" ${c.stock + c.reserved ? '' : 'disabled'}>Продал</button>
+      <button id="s-res-plus" ${c.stock ? '' : 'disabled'}>+ Бронь</button>
+      <button id="s-res-minus" ${c.reserved ? '' : 'disabled'}>− Бронь</button>
       <button id="s-photos">Фото</button>
-      <button id="s-edit">Изменить товар</button>
     </div>
     <label class="check" style="margin-top:14px"><input type="checkbox" id="s-listed" ${i.listed ? 'checked' : ''}> Выставлено на Авито</label>`, (el) => {
     $$('[data-full]', el).forEach((img) => (img.onclick = () => showPhoto(img.dataset.full)));
     $('#s-sell', el).onclick = () => sellForm(i);
     $('#s-photos', el).onclick = () => photosSheet(i);
-    $('#s-edit', el).onclick = guard(async () => itemForm(await api('batch', i.batch_id), i));
+    const res = (d) => guard(async () => { await api('saveItem', i.id, { reserved: c.reserved + d }); closeSheet(); toast(d > 0 ? 'Забронировано' : 'Бронь снята'); rerender(); });
+    $('#s-res-plus', el).onclick = res(1);
+    $('#s-res-minus', el).onclick = res(-1);
     $('#s-listed', el).onchange = guard(async (e) => { await api('saveItem', i.id, { listed: e.target.checked }); rerender(); });
   });
 }
