@@ -5,25 +5,22 @@ HERE = Path(__file__).parent
 css = (HERE.parent / "static" / "styles.css").read_text()
 
 # отступы под безопасные зоны телефона и шрифты
-css = css.replace(
-    ".view { padding: 16px 16px calc(var(--nav-h) + 24px + env(safe-area-inset-bottom)); max-width: 1100px; margin: 0 auto; }",
+def sub(old, new):
+    global css
+    assert old in css, old
+    css = css.replace(old, new)
+
+sub(".view { padding: 16px 16px calc(var(--nav-h) + 24px + env(safe-area-inset-bottom)); max-width: 1080px; margin: 0 auto; }",
     ".view { padding-block: 16px calc(var(--nav-h) + 24px + env(safe-area-inset-bottom, 0px));"
     " padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));"
-    " max-width: 1100px; margin: 0 auto; }")
-css = css.replace(
-    "  .view { padding: 28px 32px 48px; width: 100%; }",
-    "  .view { padding-block: 28px 48px; padding-left: max(32px, env(safe-area-inset-left, 0px));"
-    " padding-right: max(32px, env(safe-area-inset-right, 0px)); width: 100%; }")
-css = css.replace(
-    "  background: var(--surface); border-top: 1px solid var(--border);\n}",
+    " max-width: 1080px; margin: 0 auto; }")
+sub("  .view { padding: 30px 36px 48px; width: 100%; }",
+    "  .view { padding-block: 30px 48px; padding-left: max(36px, env(safe-area-inset-left, 0px));"
+    " padding-right: max(36px, env(safe-area-inset-right, 0px)); width: 100%; }")
+sub("  background: var(--sheet); border-top: 1px solid var(--line);\n}",
     "  padding-left: env(safe-area-inset-left, 0px); padding-right: env(safe-area-inset-right, 0px);\n"
-    "  background: var(--surface); border-top: 1px solid var(--border);\n}")
-css = css.replace("position: sticky; top: 0; height: 100vh;", "position: sticky; top: env(safe-area-inset-top, 0px); height: 100vh;")
-css = css.replace('font: 15px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;',
-                  'font: 15px/1.45 "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;')
-css += '\nh1, .kpi .value, .nav .brand { font-family: "Space Grotesk", "Inter", system-ui, sans-serif; }\n' \
-       'h1 { text-wrap: balance; }\n.nav .brand svg { width: 30px; height: 30px; }\n' \
-       '@media (prefers-reduced-motion: reduce) { .sheet-panel { animation: none; } }\n'
+    "  background: var(--sheet); border-top: 1px solid var(--line);\n}")
+sub("position: sticky; top: 0; height: 100vh;", "position: sticky; top: env(safe-area-inset-top, 0px); height: 100vh;")
 for needle in ["padding-block: 16px", "position: sticky; top: env", "padding-left: env(safe-area"]:
     assert needle in css, needle
 
@@ -41,7 +38,7 @@ out = f"""<title>Товарка</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&family=Unbounded:wght@500;600&family=JetBrains+Mono:wght@400;500&display=swap">
 <style>
 {css}
 </style>

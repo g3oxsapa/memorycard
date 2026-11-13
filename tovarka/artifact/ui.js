@@ -121,7 +121,7 @@ async function viewHome() {
   view.innerHTML = `
     <div class="page-head"><h1>Главная</h1>
       <span class="chip" title="Курс юаня для выкупа">¥ ${nf2.format(s.cny_cbr)} + ${nf2.format(s.cny_markup)} = <b>${nf2.format(s.cny_rate)} ₽</b></span></div>
-    ${d.missing_buy_price ? `<div class="alert" style="margin-bottom:12px">⚠️ <div>У ${d.missing_buy_price} ${plural(d.missing_buy_price, 'позиции', 'позиций', 'позиций')} не вбита цена выкупа в юанях — прибыль пока посчитана без неё. <a href="#batches">Вбить цены</a></div></div>` : ''}
+    ${d.missing_buy_price ? `<div class="alert" style="margin-bottom:12px"><div>У ${d.missing_buy_price} ${plural(d.missing_buy_price, 'позиции', 'позиций', 'позиций')} не вбита цена выкупа в юанях — прибыль пока посчитана без неё. <a href="#batches">Вбить цены</a></div></div>` : ''}
     <div class="grid kpis">
       <div class="card kpi hero"><div class="label">Чистая прибыль с продаж</div><div class="value num">${rubS(d.profit_rub)}</div>
         <div class="hint">Если продашь всё по своим ценам — ${rubS(d.planned_profit_rub)} · ROI ${nf0.format(d.roi_pct)}%</div></div>
@@ -165,7 +165,7 @@ function chart(weeks) {
   }).join('');
   const empty = weeks.every((w) => !w.revenue);
   return `<div class="chart" role="img" aria-label="Выручка и прибыль по неделям">${cols}</div>
-    <div class="legend"><span><i style="background:var(--accent)"></i>Выручка</span><span><i style="background:var(--pos)"></i>Прибыль</span>${empty ? '<span>· продаж пока нет</span>' : ''}</div>`;
+    <div class="legend"><span><i style="background:var(--ink)"></i>Выручка</span><span><i style="background:var(--tape)"></i>Прибыль</span>${empty ? '<span>· продаж пока нет</span>' : ''}</div>`;
 }
 
 const statusChip = (s) => (s === 'received' ? '<span class="chip ok">получена</span>' : '<span class="chip accent">в пути</span>');
@@ -203,7 +203,7 @@ async function batchForm(b) {
         <label class="f"><span>Карго, $/кг</span><input name="cargo_usd_per_kg" type="number" step="0.01" min="0" value="${v.cargo_usd_per_kg}"></label>
         <label class="f"><span>Доставка РФ, ₽</span><input name="rf_delivery_rub" type="number" step="1" min="0" value="${v.rf_delivery_rub}"></label>
       </div>
-      <p class="hint-line">Курсы запоминаются в партии и не меняются сами, чтобы старые расчёты не «плыли».</p>
+      <p class="hint-line">Курсы запоминаются в партии и не меняются сами, чтобы старые расчёты не «плыли».${b && b.cny_cbr !== s.cny_cbr ? ` <a href="#" id="use-rate">Подставить сегодняшний курс ЦБ (${nf2.format(s.cny_cbr)})</a>` : ''}</p>
       <label class="f"><span>Заметка</span><textarea name="note" rows="2" placeholder="Трек-номер, у кого заказывал…">${esc(v.note)}</textarea></label>
       <button class="primary block">${b ? 'Сохранить' : 'Создать партию'}</button>
       ${b ? '<button type="button" class="danger block" id="del-batch" style="margin-top:8px">Удалить партию</button>' : ''}
@@ -215,6 +215,7 @@ async function batchForm(b) {
       closeSheet();
       if (b) rerender(); else location.hash = `#batch-${r.id}`;
     });
+    $('#use-rate', el)?.addEventListener('click', (e) => { e.preventDefault(); $('[name=cny_cbr]', el).value = s.cny_cbr; e.target.remove(); });
     if (b) $('#del-batch', el).onclick = guard(async () => {
       if (!(await ask(`Удалить «${b.name}» вместе со всеми товарами, фото и продажами?`))) return batchForm(b);
       await api('delBatch', b.id);
@@ -231,7 +232,7 @@ async function viewBatch(id) {
     <div class="page-head"><div class="row"><h1>${esc(b.name)}</h1>${statusChip(b.status)}</div>
       <div class="row">${b.status === 'transit' ? '<button class="sm" id="recv">Пришла</button>' : ''}<button class="sm" id="edit-batch">Курсы и настройки</button></div></div>
     ${b.note ? `<p class="muted" style="margin-top:-8px">${esc(b.note)}</p>` : ''}
-    ${b.missing_buy_price ? `<div class="alert" style="margin-bottom:12px">⚠️ Вбей цену выкупа в юанях у ${b.missing_buy_price} ${plural(b.missing_buy_price, 'позиции', 'позиций', 'позиций')} — поле подсвечено ниже.</div>` : ''}
+    ${b.missing_buy_price ? `<div class="alert" style="margin-bottom:12px">Вбей цену выкупа в юанях у ${b.missing_buy_price} ${plural(b.missing_buy_price, 'позиции', 'позиций', 'позиций')} — поле подсвечено ниже.</div>` : ''}
 
     <div class="card">
       <div class="calc two">
@@ -275,7 +276,7 @@ function itemCard(i) {
   const c = i.calc;
   const ph = i.photos[0];
   return `<div class="card item" data-item="${i.id}">
-    <button class="thumb" data-photos="${i.id}" aria-label="Фото">${ph ? `<img src="${ph.url}" alt="" loading="lazy">` : '📷'}</button>
+    <button class="thumb" data-photos="${i.id}" aria-label="Фото">${ph ? `<img src="${ph.url}" alt="" loading="lazy">` : 'нет<br>фото'}</button>
     <div>
       <div class="row"><span class="item-title">${esc(itemName(i))}</span>${i.photos.length > 1 ? `<span class="chip">${i.photos.length} фото</span>` : ''}</div>
       <div class="chips" style="margin-top:4px">
@@ -397,7 +398,7 @@ function sellForm(i) {
       const d = formData(f);
       d.sold_at = d.sold_at === today ? null : `${d.sold_at} 12:00:00`;
       await api('createSale', i.id, d);
-      closeSheet(); toast('Продажа записана 💸'); rerender();
+      closeSheet(); toast('Продажа записана'); rerender();
     });
   });
 }
@@ -458,7 +459,7 @@ async function viewStock() {
     const units = list.reduce((s, i) => s + i.calc.stock, 0);
     $('#stock-list').innerHTML = list.length ? `<div class="stock-grid">${list.map((i) => `
       <button class="card tile ${i.calc.stock + i.calc.reserved ? '' : 'soldout'}" data-open="${i.id}">
-        <div class="ph">${i.photos[0] ? `<img src="${i.photos[0].url}" alt="" loading="lazy">` : '📷'}</div>
+        <div class="ph">${i.photos[0] ? `<img src="${i.photos[0].url}" alt="" loading="lazy">` : 'нет фото'}</div>
         <div class="body"><div class="t">${esc(itemName(i))}</div>
           <div class="p num">${rub(i.sell_price)}</div>
           <div class="chips" style="margin-top:6px"><span class="chip ${i.calc.stock ? 'ok' : ''}">${i.calc.stock ? `${i.calc.stock} шт` : 'нет'}</span>
@@ -517,7 +518,7 @@ async function viewSales() {
   const sum = (k) => active.reduce((a, s) => a + (k === 'rev' ? s.price * s.qty - s.extra_cost : s.profit_rub), 0);
   view.innerHTML = `
     <div class="page-head"><h1>Продажи</h1></div>
-    <div class="grid kpis" style="margin-bottom:16px">
+    <div class="grid kpis three" style="margin-bottom:16px">
       <div class="card kpi"><div class="label">Продаж</div><div class="value num">${active.reduce((a, s) => a + s.qty, 0)} шт</div></div>
       <div class="card kpi"><div class="label">Выручка</div><div class="value num">${rub(sum('rev'))}</div></div>
       <div class="card kpi"><div class="label">Прибыль</div><div class="value num">${rubS(sum('profit'))}</div></div>
@@ -560,7 +561,7 @@ async function viewSettings() {
         <label class="f"><span>Доставка по РФ на посылку, ₽</span><input name="rf_delivery_rub" type="number" step="1" min="0" value="${s.rf_delivery_rub}"></label>
         <label class="f"><span>Залежался через, дней</span><input name="stale_days" type="number" step="1" min="1" value="${s.stale_days}"></label>
       </div>
-      <p class="hint-line">Курс юаня вписывается вручную: сайт ЦБ отсюда недоступен. Новые значения применяются к новым партиям. У существующей партии курсы меняются в её «Курсах и настройках».</p>
+      <p class="hint-line">Курс ЦБ обновляется сам каждое утро. Можно поправить вручную. Новые значения применяются к новым партиям. У существующей партии курсы меняются в её «Курсах и настройках».</p>
       <button class="primary">Сохранить</button>
     </form>
 
