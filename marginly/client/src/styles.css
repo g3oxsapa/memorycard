@@ -311,3 +311,6 @@ a.btn { text-decoration: none; }
 button.ghost { border-color: transparent; color: var(--muted); }
 button.ghost:hover { color: var(--ink); }
 #otabs { flex-wrap: wrap; }
+.auth-demo { margin-top: 18px; padding-top: 16px; border-top: 1px dashed var(--line); }
+.auth-demo .hint-line { margin: 8px 0 0; }
+.auth-server { text-align: center; margin-top: 14px; }

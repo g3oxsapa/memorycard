@@ -14,6 +14,7 @@ class HttpError extends Error {
 }
 
 async function http(path, { method = 'GET', body, token, form } = {}) {
+  if (!API_BASE && window.__APP_ANDROID) throw new HttpError(0, 'Сервер Marginly ещё не запущен. Попробуй демо-режим — без регистрации');
   const headers = {};
   if (token) headers.Authorization = 'Bearer ' + token;
   if (body !== undefined && !form) headers['Content-Type'] = 'application/json';
@@ -32,7 +33,7 @@ async function http(path, { method = 'GET', body, token, form } = {}) {
   return data;
 }
 
-function makeSyncDb({ token, email, onPlan, onRejected, onStatus, onAuthLost }) {
+function makeSyncDb({ token, email, onPlan, onRejected, onStatus, onAuthLost, offline }) {
   const key = 'mg:data:' + email.toLowerCase();
   const load = () => { try { return JSON.parse(localStorage.getItem(key)) || {}; } catch { return {}; } };
   const st = load();
@@ -57,9 +58,10 @@ function makeSyncDb({ token, email, onPlan, onRejected, onStatus, onAuthLost }) 
     pending[path] = { data: data === null ? null : docs.get(path), v: ++ver };
     persist(); notify(); schedule(600);
   }
-  function schedule(ms) { clearTimeout(timer); timer = setTimeout(syncNow, ms); }
+  function schedule(ms) { if (offline) { pending = {}; persist(); return; } clearTimeout(timer); timer = setTimeout(syncNow, ms); }
 
   async function syncNow() {
+    if (offline) { pending = {}; persist(); return; }
     if (running) { again = true; return; }
     running = true;
     try {

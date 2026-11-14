@@ -453,6 +453,9 @@ a.btn { text-decoration: none; }
 button.ghost { border-color: transparent; color: var(--muted); }
 button.ghost:hover { color: var(--ink); }
 #otabs { flex-wrap: wrap; }
+.auth-demo { margin-top: 18px; padding-top: 16px; border-top: 1px dashed var(--line); }
+.auth-demo .hint-line { margin: 8px 0 0; }
+.auth-server { text-align: center; margin-top: 14px; }
 
 </style>
 </head>
@@ -951,6 +954,7 @@ class HttpError extends Error {
 }
 
 async function http(path, { method = 'GET', body, token, form } = {}) {
+  if (!API_BASE && window.__APP_ANDROID) throw new HttpError(0, 'Сервер Marginly ещё не запущен. Попробуй демо-режим — без регистрации');
   const headers = {};
   if (token) headers.Authorization = 'Bearer ' + token;
   if (body !== undefined && !form) headers['Content-Type'] = 'application/json';
@@ -969,7 +973,7 @@ async function http(path, { method = 'GET', body, token, form } = {}) {
   return data;
 }
 
-function makeSyncDb({ token, email, onPlan, onRejected, onStatus, onAuthLost }) {
+function makeSyncDb({ token, email, onPlan, onRejected, onStatus, onAuthLost, offline }) {
   const key = 'mg:data:' + email.toLowerCase();
   const load = () => { try { return JSON.parse(localStorage.getItem(key)) || {}; } catch { return {}; } };
   const st = load();
@@ -994,9 +998,10 @@ function makeSyncDb({ token, email, onPlan, onRejected, onStatus, onAuthLost }) 
     pending[path] = { data: data === null ? null : docs.get(path), v: ++ver };
     persist(); notify(); schedule(600);
   }
-  function schedule(ms) { clearTimeout(timer); timer = setTimeout(syncNow, ms); }
+  function schedule(ms) { if (offline) { pending = {}; persist(); return; } clearTimeout(timer); timer = setTimeout(syncNow, ms); }
 
   async function syncNow() {
+    if (offline) { pending = {}; persist(); return; }
     if (running) { again = true; return; }
     running = true;
     try {
@@ -1466,7 +1471,7 @@ function photosSheet(i) {
       ${photos.map((p) => `<div class="ph"><img src="${p.url}" alt="" data-full="${p.url}"><button data-del-photo="${p.id}" aria-label="Удалить фото">✕</button></div>`).join('')}
       ${ASSETS ? '<label class="add"><b>+</b>Добавить<input type="file" accept="image/*" multiple hidden id="ph-input"></label>' : ''}
     </div>
-    <p class="hint-line" style="margin-top:12px">${ASSETS ? 'С телефона можно сразу снять на камеру. Фото сжимаются автоматически.' : 'Добавлять фото может только владелец страницы.'}</p>`;
+    <p class="hint-line" style="margin-top:12px">${ASSETS ? 'С телефона можно сразу снять на камеру. Фото сжимаются автоматически.' : 'Фото доступны после регистрации: они хранятся на сервере.'}</p>`;
   const mount = (el) => {
     if ($('#ph-input', el)) $('#ph-input', el).onchange = guard(async (e) => {
       const files = [...e.target.files]; if (!files.length) return;
@@ -1859,7 +1864,10 @@ function showLogin(msg) {
       <p class="neg small" id="auth-err" hidden></p>
       <button type="submit" class="primary block">Войти</button>
     </form>
-    <div class="auth-links"><a href="#" id="go-register">Регистрация</a><a href="#" id="go-forgot">Забыли пароль?</a></div>`);
+    <div class="auth-links"><a href="#" id="go-register">Регистрация</a><a href="#" id="go-forgot">Забыли пароль?</a></div>
+    <div class="auth-demo"><button class="block" id="go-demo">Попробовать без регистрации</button>
+      <p class="hint-line">Данные будут только на этом устройстве. Ограничения как в пробной неделе: 1 партия и до 10 товаров.</p></div>
+    ${window.__APP_ANDROID ? `<p class="auth-server small muted">Сервер: ${API_BASE ? esc(API_BASE) : 'не задан'} · <a href="#" id="go-server">изменить</a></p>` : ''}`);
   bindForm(async (d) => {
     authState.email = d.email;
     try {
@@ -1871,6 +1879,27 @@ function showLogin(msg) {
   });
   $('#go-register').onclick = (e) => { e.preventDefault(); showRegister(); };
   $('#go-forgot').onclick = (e) => { e.preventDefault(); showForgot(); };
+  $('#go-demo').onclick = () => { const s = { demo: true, email: 'demo' }; saveSession(s); startApp(s); };
+  $('#go-server')?.addEventListener('click', (e) => { e.preventDefault(); showServer(); });
+}
+
+function showServer() {
+  authShell('Адрес сервера', `
+    <p class="auth-note">Обычно менять не нужно. Адрес сервера Marginly появится, когда сервис запустится.</p>
+    <form id="auth-form" novalidate>
+      <label class="f"><span>Адрес</span><input name="url" type="url" placeholder="https://api.marginly.ru" value="${esc(API_BASE)}"></label>
+      <p class="neg small" id="auth-err" hidden></p>
+      <button type="submit" class="primary block">Сохранить</button>
+    </form>
+    <div class="auth-links"><a href="#" id="go-login">Назад</a></div>`);
+  bindForm(async (d) => {
+    const url = (d.url || '').trim().replace(/\/+$/, '');
+    if (url && !/^https:\/\/[^\s/]+/.test(url)) throw new Error('Адрес должен начинаться с https://');
+    try { url ? localStorage.setItem('mg:api', url) : localStorage.removeItem('mg:api'); } catch { /* */ }
+    API_BASE = url;
+    showLogin(url ? 'Адрес сохранён' : 'Адрес сброшен');
+  });
+  $('#go-login').onclick = (e) => { e.preventDefault(); showLogin(); };
 }
 
 function showRegister() {
@@ -1959,8 +1988,11 @@ const REJECT_TEXT = {
   bad_path: 'Часть данных не сохранилась',
 };
 
+const DEMO_PLAN = { status: 'demo', limits: { batches: 1, items: 10 }, can_write: true };
+
 function planText(p) {
   if (!p) return 'Загружаю тариф…';
+  if (p.status === 'demo') return 'Демо-режим: данные только на этом устройстве · 1 партия и до 10 товаров';
   if (p.status === 'active') return `Подписка активна до ${fmtDate(p.paid_until.slice(0, 10))}`;
   if (p.status === 'trial') {
     const left = Math.max(0, Math.ceil((new Date(p.trial_ends_at) - Date.now()) / 86400000));
@@ -1992,20 +2024,23 @@ function accountSection() {
     <div class="section"><h3>Аккаунт и тариф</h3><div class="card">
       <div class="calc">
         <span class="k">Почта</span><span class="v">${esc(S.email)}</span>
-        <span class="k">Тариф</span><span class="v">${p?.status === 'active' ? 'Подписка' : p?.status === 'trial' ? 'Пробный' : 'Закончился'}</span>
-        <span class="k">Синхронизация</span><span class="v">${SYNC_STATE === 'offline' ? `<span class="neg">нет связи${pending ? `, ждут отправки: ${pending}` : ''}</span>` : '<span class="pos">всё сохранено</span>'}</span>
+        <span class="k">Тариф</span><span class="v">${{ active: 'Подписка', trial: 'Пробный', demo: 'Демо' }[p?.status] || 'Закончился'}</span>
+        ${p?.status === 'demo' ? '' : `<span class="k">Синхронизация</span><span class="v">${SYNC_STATE === 'offline' ? `<span class="neg">нет связи${pending ? `, ждут отправки: ${pending}` : ''}</span>` : '<span class="pos">всё сохранено</span>'}</span>`}
       </div>
       <p class="hint-line" style="margin:12px 0">${esc(planText(p))}</p>
-      ${p?.status !== 'active' ? `<button class="primary" id="subscribe">Оформить подписку — ${PRICE_RUB} ₽/мес</button>` : ''}
+      ${p?.status === 'demo' ? `<button class="primary" id="demo-exit">Зарегистрироваться</button>
+        <p class="hint-line" style="margin-top:10px">После регистрации данные демо-режима не переносятся.</p>`
+        : `${p?.status !== 'active' ? `<button class="primary" id="subscribe">Оформить подписку — ${PRICE_RUB} ₽/мес</button>` : ''}
       <div class="row" style="margin-top:14px">
         <button id="logout">Выйти</button>
         <span class="spacer"></span>
         <button class="ghost sm" id="del-acc">Удалить аккаунт</button>
-      </div>
+      </div>`}
     </div></div>`;
 }
 
 function bindAccountSection() {
+  $('#demo-exit')?.addEventListener('click', () => { saveSession(null); sessionStorage.setItem('mg:msg', 'Зарегистрируйся, чтобы данные сохранялись на сервере'); location.reload(); });
   $('#subscribe')?.addEventListener('click', () => toast('Оплата подключается на следующем этапе'));
   $('#logout')?.addEventListener('click', guard(async () => {
     if (DB?.pendingCount?.() && !(await ask('Часть изменений ещё не отправлена на сервер. Если выйти сейчас, они пропадут.', 'Всё равно выйти'))) return;
@@ -2049,7 +2084,18 @@ async function refreshRate() {
 
 async function startApp(session, plan) {
   SESSION = session;
-  S.email = session.email;
+  S.email = session.demo ? 'демо-режим' : session.email;
+  if (session.demo) {
+    S.plan = DEMO_PLAN;
+    document.body.classList.remove('auth-mode');
+    DB = makeSyncDb({ email: 'demo', offline: true });
+    ASSETS = null;
+    connectStore(onStoreChange);
+    await ensureDefaults();
+    renderBanner();
+    render();
+    return;
+  }
   try { S.plan = plan || JSON.parse(localStorage.getItem('mg:plan:' + session.email)) || null; } catch { S.plan = plan || null; }
   document.body.classList.remove('auth-mode');
   view.innerHTML = '<div class="empty"><b>Загружаю данные…</b></div>';
@@ -2081,7 +2127,8 @@ window.__onBack = () => {
   const s = loadSession();
   const msg = sessionStorage.getItem('mg:msg');
   sessionStorage.removeItem('mg:msg');
-  if (s?.token) startApp(s);
+  try { const api = localStorage.getItem('mg:api'); if (api) API_BASE = api; } catch { /* */ }
+  if (s?.token || s?.demo) startApp(s);
   else showLogin(msg);
 })();
 

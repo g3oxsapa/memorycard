@@ -15,8 +15,11 @@ const REJECT_TEXT = {
   bad_path: 'Часть данных не сохранилась',
 };
 
+const DEMO_PLAN = { status: 'demo', limits: { batches: 1, items: 10 }, can_write: true };
+
 function planText(p) {
   if (!p) return 'Загружаю тариф…';
+  if (p.status === 'demo') return 'Демо-режим: данные только на этом устройстве · 1 партия и до 10 товаров';
   if (p.status === 'active') return `Подписка активна до ${fmtDate(p.paid_until.slice(0, 10))}`;
   if (p.status === 'trial') {
     const left = Math.max(0, Math.ceil((new Date(p.trial_ends_at) - Date.now()) / 86400000));
@@ -48,20 +51,23 @@ function accountSection() {
     <div class="section"><h3>Аккаунт и тариф</h3><div class="card">
       <div class="calc">
         <span class="k">Почта</span><span class="v">${esc(S.email)}</span>
-        <span class="k">Тариф</span><span class="v">${p?.status === 'active' ? 'Подписка' : p?.status === 'trial' ? 'Пробный' : 'Закончился'}</span>
-        <span class="k">Синхронизация</span><span class="v">${SYNC_STATE === 'offline' ? `<span class="neg">нет связи${pending ? `, ждут отправки: ${pending}` : ''}</span>` : '<span class="pos">всё сохранено</span>'}</span>
+        <span class="k">Тариф</span><span class="v">${{ active: 'Подписка', trial: 'Пробный', demo: 'Демо' }[p?.status] || 'Закончился'}</span>
+        ${p?.status === 'demo' ? '' : `<span class="k">Синхронизация</span><span class="v">${SYNC_STATE === 'offline' ? `<span class="neg">нет связи${pending ? `, ждут отправки: ${pending}` : ''}</span>` : '<span class="pos">всё сохранено</span>'}</span>`}
       </div>
       <p class="hint-line" style="margin:12px 0">${esc(planText(p))}</p>
-      ${p?.status !== 'active' ? `<button class="primary" id="subscribe">Оформить подписку — ${PRICE_RUB} ₽/мес</button>` : ''}
+      ${p?.status === 'demo' ? `<button class="primary" id="demo-exit">Зарегистрироваться</button>
+        <p class="hint-line" style="margin-top:10px">После регистрации данные демо-режима не переносятся.</p>`
+        : `${p?.status !== 'active' ? `<button class="primary" id="subscribe">Оформить подписку — ${PRICE_RUB} ₽/мес</button>` : ''}
       <div class="row" style="margin-top:14px">
         <button id="logout">Выйти</button>
         <span class="spacer"></span>
         <button class="ghost sm" id="del-acc">Удалить аккаунт</button>
-      </div>
+      </div>`}
     </div></div>`;
 }
 
 function bindAccountSection() {
+  $('#demo-exit')?.addEventListener('click', () => { saveSession(null); sessionStorage.setItem('mg:msg', 'Зарегистрируйся, чтобы данные сохранялись на сервере'); location.reload(); });
   $('#subscribe')?.addEventListener('click', () => toast('Оплата подключается на следующем этапе'));
   $('#logout')?.addEventListener('click', guard(async () => {
     if (DB?.pendingCount?.() && !(await ask('Часть изменений ещё не отправлена на сервер. Если выйти сейчас, они пропадут.', 'Всё равно выйти'))) return;
@@ -105,7 +111,18 @@ async function refreshRate() {
 
 async function startApp(session, plan) {
   SESSION = session;
-  S.email = session.email;
+  S.email = session.demo ? 'демо-режим' : session.email;
+  if (session.demo) {
+    S.plan = DEMO_PLAN;
+    document.body.classList.remove('auth-mode');
+    DB = makeSyncDb({ email: 'demo', offline: true });
+    ASSETS = null;
+    connectStore(onStoreChange);
+    await ensureDefaults();
+    renderBanner();
+    render();
+    return;
+  }
   try { S.plan = plan || JSON.parse(localStorage.getItem('mg:plan:' + session.email)) || null; } catch { S.plan = plan || null; }
   document.body.classList.remove('auth-mode');
   view.innerHTML = '<div class="empty"><b>Загружаю данные…</b></div>';
@@ -137,6 +154,7 @@ window.__onBack = () => {
   const s = loadSession();
   const msg = sessionStorage.getItem('mg:msg');
   sessionStorage.removeItem('mg:msg');
-  if (s?.token) startApp(s);
+  try { const api = localStorage.getItem('mg:api'); if (api) API_BASE = api; } catch { /* */ }
+  if (s?.token || s?.demo) startApp(s);
   else showLogin(msg);
 })();

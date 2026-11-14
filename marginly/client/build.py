@@ -12,7 +12,7 @@ SRC = HERE / "src"
 JS_ORDER = ["store.js", "sync.js", "ui.js", "orders.js", "auth.js", "app.js"]
 
 
-def build(out_dir: Path, api_base: str = "") -> Path:
+def build(out_dir: Path, api_base: str = "", android: bool = False) -> Path:
     css = (SRC / "styles.css").read_text()
     fonts_css = (HERE / "fonts" / "fonts.css").read_text()
     shell = (SRC / "shell.html").read_text()
@@ -26,6 +26,8 @@ def build(out_dir: Path, api_base: str = "") -> Path:
         body = body.replace(a, b)
     js = "\n".join((SRC / f).read_text() for f in JS_ORDER)
     js = js.replace("let API_BASE = '';", f"let API_BASE = {api_base!r};", 1)
+    if android:
+        js = "window.__APP_ANDROID = true;\n" + js
     html = f"""<!doctype html>
 <html lang="ru">
 <head>
@@ -67,7 +69,7 @@ img {{ max-width: 100%; }}
 
 if __name__ == "__main__":
     if len(sys.argv) >= 2 and sys.argv[1] == "--android":
-        out = build(HERE.parent / "android" / "app" / "src" / "main" / "assets", sys.argv[2] if len(sys.argv) > 2 else "")
+        out = build(HERE.parent / "android" / "app" / "src" / "main" / "assets", sys.argv[2] if len(sys.argv) > 2 else "", android=True)
     else:
         out = build(HERE.parent / "server" / "web")
     print("ok", out, out.stat().st_size)

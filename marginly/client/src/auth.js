@@ -43,7 +43,10 @@ function showLogin(msg) {
       <p class="neg small" id="auth-err" hidden></p>
       <button type="submit" class="primary block">Войти</button>
     </form>
-    <div class="auth-links"><a href="#" id="go-register">Регистрация</a><a href="#" id="go-forgot">Забыли пароль?</a></div>`);
+    <div class="auth-links"><a href="#" id="go-register">Регистрация</a><a href="#" id="go-forgot">Забыли пароль?</a></div>
+    <div class="auth-demo"><button class="block" id="go-demo">Попробовать без регистрации</button>
+      <p class="hint-line">Данные будут только на этом устройстве. Ограничения как в пробной неделе: 1 партия и до 10 товаров.</p></div>
+    ${window.__APP_ANDROID ? `<p class="auth-server small muted">Сервер: ${API_BASE ? esc(API_BASE) : 'не задан'} · <a href="#" id="go-server">изменить</a></p>` : ''}`);
   bindForm(async (d) => {
     authState.email = d.email;
     try {
@@ -55,6 +58,27 @@ function showLogin(msg) {
   });
   $('#go-register').onclick = (e) => { e.preventDefault(); showRegister(); };
   $('#go-forgot').onclick = (e) => { e.preventDefault(); showForgot(); };
+  $('#go-demo').onclick = () => { const s = { demo: true, email: 'demo' }; saveSession(s); startApp(s); };
+  $('#go-server')?.addEventListener('click', (e) => { e.preventDefault(); showServer(); });
+}
+
+function showServer() {
+  authShell('Адрес сервера', `
+    <p class="auth-note">Обычно менять не нужно. Адрес сервера Marginly появится, когда сервис запустится.</p>
+    <form id="auth-form" novalidate>
+      <label class="f"><span>Адрес</span><input name="url" type="url" placeholder="https://api.marginly.ru" value="${esc(API_BASE)}"></label>
+      <p class="neg small" id="auth-err" hidden></p>
+      <button type="submit" class="primary block">Сохранить</button>
+    </form>
+    <div class="auth-links"><a href="#" id="go-login">Назад</a></div>`);
+  bindForm(async (d) => {
+    const url = (d.url || '').trim().replace(/\/+$/, '');
+    if (url && !/^https:\/\/[^\s/]+/.test(url)) throw new Error('Адрес должен начинаться с https://');
+    try { url ? localStorage.setItem('mg:api', url) : localStorage.removeItem('mg:api'); } catch { /* */ }
+    API_BASE = url;
+    showLogin(url ? 'Адрес сохранён' : 'Адрес сброшен');
+  });
+  $('#go-login').onclick = (e) => { e.preventDefault(); showLogin(); };
 }
 
 function showRegister() {

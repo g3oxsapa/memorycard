@@ -1,0 +1,42 @@
+plugins {
+    id 'com.android.application'
+}
+
+// Ключ подписи хранится вне репозитория. Путь и пароль передаются через переменные окружения.
+def ks = System.getenv('MARGINLY_KEYSTORE')
+
+android {
+    namespace 'ru.marginly.app'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId 'ru.marginly.app'
+        minSdk 21
+        targetSdk 34
+        versionCode 1
+        versionName '0.1'
+    }
+
+    signingConfigs {
+        release {
+            if (ks) {
+                storeFile file(ks)
+                storePassword System.getenv('MARGINLY_KS_PASS')
+                keyAlias 'marginly'
+                keyPassword System.getenv('MARGINLY_KS_PASS')
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            if (ks) signingConfig signingConfigs.release
+        }
+    }
+}
+
+dependencies {
+    implementation 'androidx.webkit:webkit:1.8.0'
+    implementation 'androidx.core:core:1.12.0'
+}

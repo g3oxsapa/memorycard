@@ -388,7 +388,7 @@ function photosSheet(i) {
       ${photos.map((p) => `<div class="ph"><img src="${p.url}" alt="" data-full="${p.url}"><button data-del-photo="${p.id}" aria-label="Удалить фото">✕</button></div>`).join('')}
       ${ASSETS ? '<label class="add"><b>+</b>Добавить<input type="file" accept="image/*" multiple hidden id="ph-input"></label>' : ''}
     </div>
-    <p class="hint-line" style="margin-top:12px">${ASSETS ? 'С телефона можно сразу снять на камеру. Фото сжимаются автоматически.' : 'Добавлять фото может только владелец страницы.'}</p>`;
+    <p class="hint-line" style="margin-top:12px">${ASSETS ? 'С телефона можно сразу снять на камеру. Фото сжимаются автоматически.' : 'Фото доступны после регистрации: они хранятся на сервере.'}</p>`;
   const mount = (el) => {
     if ($('#ph-input', el)) $('#ph-input', el).onchange = guard(async (e) => {
       const files = [...e.target.files]; if (!files.length) return;
