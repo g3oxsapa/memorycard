@@ -9,10 +9,11 @@ from datetime import timedelta
 from fastapi import Depends, FastAPI, File, Header, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 from PIL import Image, ImageOps
 from pydantic import BaseModel, Field
 
-from . import config, db, mailer, plans, security
+from . import config, db, mailer, plans, rates, security
 
 EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
 PATH_RE = re.compile(r"^([A-Za-z0-9_\-.~:@+]{1,100})/([A-Za-z0-9_\-.~:@+]{1,200})$")
@@ -345,3 +346,17 @@ def delete_blob(blob_id: str, user=Depends(current_user)):
 @app.get("/api/health")
 def health():
     return {"ok": True}
+
+
+@app.get("/api/rate")
+def rate():
+    """Курс юаня ЦБ, общий для всех. Кэшируется на сервере на 3 часа."""
+    r = rates.cny()
+    if not r:
+        raise HTTPException(503, "Курс ЦБ сейчас недоступен")
+    return r
+
+
+# веб-версия приложения (собирается из client/ скриптом build.py)
+if config.WEB_DIR.exists():
+    app.mount("/", StaticFiles(directory=config.WEB_DIR, html=True), name="web")

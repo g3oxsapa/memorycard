@@ -44,4 +44,5 @@ MAIL_FROM = os.environ.get("MAIL_FROM", "Marginly <no-reply@marginly.ru>")
 CORS_ORIGINS = [o for o in os.environ.get(
     "MARGINLY_CORS", "https://appassets.androidplatform.net,http://localhost:8000").split(",") if o]
 
-COLLECTIONS = {"app", "categories", "batches", "items", "sales", "expenses", "photos"}
+COLLECTIONS = {"app", "categories", "batches", "items", "orders", "expenses", "photos"}
+WEB_DIR = Path(__file__).resolve().parent.parent / "web"

@@ -1,0 +1,2090 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#15171a">
+<title>Marginly</title>
+<meta name="description" content="Учёт партий из Китая: карго, себестоимость, склад, заказы и прибыль">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<style>
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(fonts/JetBrainsMono-400-cyrillic-b1b041.woff2) format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(fonts/JetBrainsMono-400-latin-480c06.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(fonts/JetBrainsMono-500-cyrillic-b1b041.woff2) format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(fonts/JetBrainsMono-500-latin-480c06.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Onest';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(fonts/Onest-400-cyrillic-4c7562.woff2) format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Onest';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(fonts/Onest-400-latin-cebbb5.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Onest';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(fonts/Onest-500-cyrillic-4c7562.woff2) format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Onest';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(fonts/Onest-500-latin-cebbb5.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Onest';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(fonts/Onest-600-cyrillic-4c7562.woff2) format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Onest';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(fonts/Onest-600-latin-cebbb5.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Onest';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(fonts/Onest-700-cyrillic-4c7562.woff2) format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Onest';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(fonts/Onest-700-latin-cebbb5.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Unbounded';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(fonts/Unbounded-500-cyrillic-c86556.woff2) format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Unbounded';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(fonts/Unbounded-500-latin-06f2e4.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Unbounded';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(fonts/Unbounded-600-cyrillic-c86556.woff2) format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Unbounded';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(fonts/Unbounded-600-latin-06f2e4.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+[hidden] { display: none !important; }
+img { max-width: 100%; }
+/* Складская накладная: бумага, чернила, жёлтая грузовая лента. Плоско, острые углы, цифры моноширинным. */
+:root {
+  --paper: #f1f2ef;
+  --sheet: #ffffff;
+  --sheet-2: #e7e9e5;
+  --line: #d5d8d3;
+  --ink: #15171a;
+  --muted: #5d636b;
+  --tape: #ffd21f;
+  --tape-ink: #15171a;
+  --pos: #0b7a4b;
+  --neg: #c2362f;
+  --link: #15171a;
+  --f-display: "Unbounded", "Onest", system-ui, sans-serif;
+  --f-body: "Onest", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --f-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --r: 4px;
+  --nav-h: 62px;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #111214; --sheet: #1a1c1f; --sheet-2: #24272b; --line: #2e3237;
+    --ink: #eceeef; --muted: #959ba3; --tape: #f2c419; --tape-ink: #111214;
+    --pos: #3fcb8b; --neg: #ff7a6b; --link: #eceeef; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #111214; --sheet: #1a1c1f; --sheet-2: #24272b; --line: #2e3237;
+  --ink: #eceeef; --muted: #959ba3; --tape: #f2c419; --tape-ink: #111214;
+  --pos: #3fcb8b; --neg: #ff7a6b; --link: #eceeef; color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  background: var(--paper); color: var(--ink);
+  font: 15px/1.5 var(--f-body);
+  -webkit-font-smoothing: antialiased; -webkit-tap-highlight-color: transparent;
+}
+a { color: var(--link); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+h1 { font: 600 22px/1.2 var(--f-display); margin: 0; letter-spacing: -.01em; text-wrap: balance; }
+h2 { font: 600 16px/1.3 var(--f-body); margin: 0; }
+h3 { font: 500 12px/1.4 var(--f-mono); margin: 0 0 8px; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+.num, .calc .v, td.num { font-family: var(--f-mono); font-variant-numeric: tabular-nums; letter-spacing: -.02em; }
+.muted { color: var(--muted); }
+.pos { color: var(--pos); }
+.neg { color: var(--neg); }
+.small { font-size: 13px; }
+
+/* ── каркас ── */
+.layout { min-height: 100vh; }
+.view { padding: 16px 16px calc(var(--nav-h) + 24px + env(safe-area-inset-bottom)); max-width: 1080px; margin: 0 auto; }
+.nav {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 20;
+  display: flex; justify-content: space-around; align-items: stretch;
+  height: calc(var(--nav-h) + env(safe-area-inset-bottom)); padding-bottom: env(safe-area-inset-bottom);
+  background: var(--sheet); border-top: 1px solid var(--line);
+}
+.nav .brand { display: none; }
+.nav a {
+  flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
+  color: var(--muted); font-size: 11px; font-weight: 500; text-decoration: none; position: relative;
+}
+.nav a svg { width: 21px; height: 21px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: square; stroke-linejoin: miter; }
+.nav a.active { color: var(--ink); }
+.nav a.active::before { content: ""; position: absolute; top: -1px; left: 22%; right: 22%; height: 3px; background: var(--tape); }
+
+@media (min-width: 900px) {
+  .layout { display: grid; grid-template-columns: 216px 1fr; }
+  .nav {
+    position: sticky; top: 0; height: 100vh; flex-direction: column; justify-content: flex-start;
+    gap: 0; padding: 18px 0; border-top: 0; border-right: 1px solid var(--line);
+  }
+  .nav .brand { display: flex; align-items: center; gap: 10px; font: 600 16px var(--f-display); padding: 2px 20px 22px; }
+  .nav .brand svg, .nav .brand img { width: 28px; height: 28px; }
+  .nav a { flex: none; flex-direction: row; justify-content: flex-start; gap: 12px; padding: 11px 20px; font-size: 14px; }
+  .nav a:hover { color: var(--ink); background: var(--sheet-2); }
+  .nav a.active { background: var(--sheet-2); }
+  .nav a.active::before { top: 0; bottom: 0; left: 0; right: auto; width: 4px; height: auto; }
+  .view { padding: 30px 36px 48px; width: 100%; }
+}
+
+.page-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; margin: 4px 0 20px; flex-wrap: wrap; padding-bottom: 14px; border-bottom: 2px solid var(--ink); }
+.back { display: inline-flex; align-items: center; gap: 4px; color: var(--muted); font: 500 12px var(--f-mono); text-transform: uppercase; letter-spacing: .05em; margin-bottom: 8px; text-decoration: none; }
+.section { margin: 30px 0 0; }
+.row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.spacer { flex: 1; }
+
+/* ── блоки ── */
+.card { background: var(--sheet); border: 1px solid var(--line); border-radius: var(--r); padding: 16px; }
+.card + .card { margin-top: 8px; }
+.grid { display: grid; gap: 0; }
+
+/* итоговые цифры — как строка в накладной: ячейки через линию */
+.kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; }
+@media (min-width: 700px) { .kpis { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.kpis.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.kpis > .card { border: 0; border-radius: 0; margin: 0; }
+.kpi { padding: 14px 16px; }
+.kpi .label { color: var(--muted); font: 500 11px/1.4 var(--f-mono); text-transform: uppercase; letter-spacing: .05em; }
+.kpi .value { font: 500 21px/1.25 var(--f-mono); margin-top: 6px; letter-spacing: -.03em; }
+.kpi .hint { color: var(--muted); font-size: 12px; margin-top: 4px; }
+.kpi.hero { grid-column: 1 / -1; padding: 18px 16px 20px; }
+.kpi.hero .value { font: 600 38px/1.1 var(--f-display); letter-spacing: -.02em; margin-top: 8px; }
+@media (min-width: 700px) { .kpi.hero .value { font-size: 46px; } }
+
+/* предупреждение — полоса грузовой ленты */
+.alert { position: relative; background: var(--sheet); border: 1px solid var(--line); border-radius: var(--r); padding: 12px 14px 12px 30px; font-weight: 500; display: flex; gap: 10px; align-items: center; overflow: hidden; }
+.alert::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 14px;
+  background: repeating-linear-gradient(-45deg, var(--tape) 0 6px, var(--tape-ink) 6px 12px); }
+.alert a { color: inherit; }
+
+/* шкала окупаемости — с делениями, как линейка */
+.progress { height: 10px; background: var(--sheet-2); margin-top: 12px; position: relative; border-radius: 1px; overflow: hidden; }
+.progress > div { height: 100%; background: var(--pos); }
+.progress::after { content: ""; position: absolute; inset: 0; background: repeating-linear-gradient(90deg, transparent 0 calc(10% - 1px), var(--sheet) calc(10% - 1px) 10%); }
+
+.list-link { display: block; color: inherit; text-decoration: none; }
+a.card.list-link:hover { border-color: var(--ink); }
+.list-link:active { opacity: .7; }
+
+/* ── расчёт ── */
+.calc { display: grid; grid-template-columns: 1fr auto; gap: 7px 16px; }
+.calc .k { color: var(--muted); }
+.calc .v { text-align: right; }
+.calc .sep { grid-column: 1 / -1; border-top: 1px dashed var(--line); margin: 4px 0; }
+.calc .strong { font-weight: 600; color: var(--ink); }
+@media (min-width: 700px) { .calc.two { grid-template-columns: 1fr auto 1fr auto; column-gap: 28px; } }
+
+.chips { display: flex; gap: 6px; flex-wrap: wrap; }
+.chip { display: inline-flex; align-items: center; gap: 4px; padding: 2px 7px; border-radius: 2px; border: 1px solid var(--line); background: transparent; font: 500 11.5px/1.5 var(--f-mono); color: var(--muted); white-space: nowrap; }
+.chip.ok { color: var(--pos); border-color: currentColor; }
+.chip.bad { color: var(--neg); border-color: currentColor; }
+.chip.warn { color: var(--tape-ink); background: var(--tape); border-color: var(--tape); }
+.chip.accent { color: var(--ink); border-color: var(--ink); }
+button.chip { cursor: pointer; }
+
+/* ── товары ── */
+.item { display: grid; grid-template-columns: 72px 1fr; gap: 14px; align-items: start; }
+.thumb {
+  width: 72px; height: 72px; border-radius: 2px; background: var(--sheet-2);
+  display: flex; align-items: center; justify-content: center; color: var(--muted);
+  font: 500 10px/1.2 var(--f-mono); text-transform: uppercase; letter-spacing: .04em; text-align: center;
+  border: 1px dashed var(--line); padding: 4px; cursor: pointer; overflow: hidden;
+}
+.thumb:has(img) { border-style: solid; padding: 0; }
+.thumb img { width: 100%; height: 100%; object-fit: cover; }
+.item-title { font-weight: 600; font-size: 16px; }
+.item-meta { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 4px 14px; margin-top: 10px; font-size: 13px; }
+.item-meta div { font-family: var(--f-mono); letter-spacing: -.02em; white-space: nowrap; }
+.item-meta div span { color: var(--muted); font-family: var(--f-body); letter-spacing: 0; }
+.item-actions { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 12px; }
+.yuan { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
+.yuan input { width: 110px; font-family: var(--f-mono); }
+.yuan.missing input { border-color: var(--tape); box-shadow: inset 0 0 0 1px var(--tape); }
+
+.stock-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+@media (min-width: 700px) { .stock-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.tile { padding: 0; overflow: hidden; cursor: pointer; text-align: left; font: inherit; color: inherit; margin: 0 !important; }
+.tile:hover { border-color: var(--ink); }
+.tile .ph { aspect-ratio: 1; background: var(--sheet-2); display: flex; align-items: center; justify-content: center; color: var(--muted); font: 500 11px var(--f-mono); text-transform: uppercase; letter-spacing: .05em; border-bottom: 1px solid var(--line); }
+.tile .ph img { width: 100%; height: 100%; object-fit: cover; }
+.tile .body { padding: 10px 12px 12px; }
+.tile .t { font-weight: 600; font-size: 14px; line-height: 1.3; }
+.tile .p { font: 500 16px var(--f-mono); margin-top: 4px; letter-spacing: -.02em; }
+.tile.soldout { opacity: .5; }
+
+.photos { display: grid; grid-template-columns: repeat(auto-fill, minmax(88px, 1fr)); gap: 8px; }
+.photos .ph { position: relative; aspect-ratio: 1; border-radius: 2px; overflow: hidden; background: var(--sheet-2); }
+.photos .ph img { width: 100%; height: 100%; object-fit: cover; cursor: zoom-in; }
+.photos .ph button { position: absolute; top: 4px; right: 4px; width: 26px; height: 26px; border-radius: 2px; border: 0; background: rgba(0,0,0,.65); color: #fff; cursor: pointer; font-size: 12px; padding: 0; }
+.photos label.add { aspect-ratio: 1; border: 1px dashed var(--muted); border-radius: 2px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--muted); cursor: pointer; font: 500 11px var(--f-mono); text-transform: uppercase; gap: 2px; }
+.photos label.add b { font: 300 26px var(--f-body); }
+
+/* ── график ── */
+.chart { display: flex; gap: 4px; height: 170px; align-items: stretch; }
+.chart .col { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.chart .bars { flex: 1; width: 100%; display: flex; align-items: flex-end; justify-content: center; gap: 2px; border-bottom: 1px solid var(--ink); }
+.chart .bars i { width: 36%; max-width: 20px; background: var(--ink); }
+.chart .bars i.profit { background: var(--tape); }
+.chart .col span { font: 11px var(--f-mono); color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+.legend { display: flex; gap: 14px; font-size: 12px; color: var(--muted); margin-top: 8px; }
+.legend i { display: inline-block; width: 10px; height: 10px; margin-right: 5px; vertical-align: -1px; }
+
+/* ── формы ── */
+button, .btn {
+  font: 600 14px var(--f-body); border-radius: var(--r); border: 1px solid var(--ink);
+  background: transparent; color: var(--ink); padding: 9px 14px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; justify-content: center;
+}
+button:hover { background: var(--sheet-2); }
+button:active { transform: translateY(1px); }
+button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible { outline: 2px solid var(--tape); outline-offset: 2px; }
+button.primary { background: var(--tape); border-color: var(--tape); color: var(--tape-ink); }
+button.primary:hover { filter: brightness(.95); background: var(--tape); }
+button.danger { color: var(--neg); border-color: var(--neg); }
+button.sm { padding: 6px 11px; font-size: 13px; }
+button.block { width: 100%; }
+button:disabled { opacity: .4; cursor: default; }
+.icon-btn { border: 0; background: transparent; padding: 6px 8px; font-size: 16px; color: var(--muted); }
+.icon-btn:hover { color: var(--ink); background: transparent; }
+
+label.f { display: block; margin-bottom: 12px; }
+label.f > span { display: block; font: 500 11px/1.4 var(--f-mono); text-transform: uppercase; letter-spacing: .05em; color: var(--muted); margin-bottom: 5px; }
+input, select, textarea {
+  font: inherit; color: var(--ink); background: var(--sheet); border: 1px solid var(--line);
+  border-radius: var(--r); padding: 10px 12px; width: 100%; min-width: 0;
+}
+input[type="number"] { font-family: var(--f-mono); }
+input:focus, select:focus, textarea:focus { outline: none; border-color: var(--ink); }
+.f-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.f-row.three { grid-template-columns: 1fr 1fr 1fr; }
+@media (max-width: 420px) { .f-row.three { grid-template-columns: 1fr 1fr; } }
+.hint-line { font-size: 13px; color: var(--muted); margin: -4px 0 12px; }
+.seg { display: inline-flex; border: 1px solid var(--ink); border-radius: var(--r); overflow: hidden; }
+.seg button { border: 0; border-radius: 0; background: transparent; padding: 7px 12px; font-size: 13px; color: var(--ink); }
+.seg button + button { border-left: 1px solid var(--ink); }
+.seg button.on { background: var(--ink); color: var(--paper); }
+.search { max-width: 320px; }
+.check { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+.check input { width: auto; accent-color: var(--ink); }
+
+table.t { width: 100%; border-collapse: collapse; font-size: 14px; }
+table.t th { text-align: left; font: 500 11px var(--f-mono); text-transform: uppercase; letter-spacing: .05em; color: var(--muted); padding: 8px; border-bottom: 1px solid var(--ink); }
+table.t td { padding: 9px 8px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+table.t td input { padding: 6px 8px; }
+
+.empty { text-align: center; color: var(--muted); padding: 40px 16px; }
+.empty b { display: block; color: var(--ink); font-size: 16px; margin-bottom: 4px; }
+
+/* ── окно ── */
+.sheet { position: fixed; inset: 0; z-index: 50; display: flex; align-items: flex-end; justify-content: center; }
+.sheet[hidden] { display: none; }
+.sheet-backdrop { position: absolute; inset: 0; background: rgba(10, 11, 13, .5); }
+.sheet-panel {
+  position: relative; background: var(--sheet); width: 100%; max-width: 540px; max-height: 92vh; overflow: auto;
+  border-radius: 6px 6px 0 0; border-top: 4px solid var(--tape); padding: 0 16px calc(20px + env(safe-area-inset-bottom));
+  animation: up .16s ease-out;
+}
+@media (min-width: 700px) { .sheet { align-items: center; } .sheet-panel { border-radius: var(--r); padding-bottom: 20px; } }
+@keyframes up { from { transform: translateY(20px); opacity: .6; } to { transform: none; opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .sheet-panel { animation: none; } }
+.sheet-head { position: sticky; top: 0; background: var(--sheet); display: flex; align-items: center; justify-content: space-between; padding: 14px 0 12px; z-index: 1; border-bottom: 1px solid var(--line); margin-bottom: 14px; }
+.sheet-head h2 { font: 600 15px var(--f-display); }
+
+.lightbox { position: fixed; inset: 0; z-index: 60; background: rgba(0,0,0,.92); display: flex; align-items: center; justify-content: center; cursor: zoom-out; }
+.lightbox[hidden] { display: none; }
+.lightbox img { max-width: 96vw; max-height: 92vh; }
+
+.toast {
+  position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(var(--nav-h) + 16px + env(safe-area-inset-bottom));
+  background: var(--ink); color: var(--paper); padding: 10px 16px; border-radius: var(--r); border-left: 6px solid var(--tape);
+  z-index: 70; font-weight: 500; max-width: calc(100vw - 32px);
+}
+.toast[hidden] { display: none; }
+@media (min-width: 900px) { .toast { bottom: 24px; } }
+
+/* ── склад ── */
+.stock-count b { color: var(--ink); font-weight: 500; }
+.tile-sell { margin-top: 10px; }
+.toast { display: flex; align-items: center; gap: 14px; width: max-content; }
+.toast-btn { border: 0; background: var(--tape); color: var(--tape-ink); padding: 6px 10px; font-size: 13px; flex: none; }
+.toast-btn:hover { background: var(--tape); filter: brightness(.95); }
+
+.nav a span { white-space: nowrap; }
+@media (max-width: 420px) { .nav a { font-size: 10px; } }
+
+/* ── Marginly: вход ── */
+body.auth-mode .nav, body.auth-mode .banners { display: none; }
+body.auth-mode .layout { display: block; }
+body.auth-mode .view { padding-bottom: 32px; }
+.auth { max-width: 420px; margin: 0 auto; padding-top: 6vh; }
+.auth-brand { display: flex; align-items: center; gap: 12px; font: 600 22px var(--f-display); }
+.auth-brand svg, .nav .brand svg { width: 36px; height: 36px; flex: none; }
+.nav .brand svg { width: 28px; height: 28px; }
+.auth-tag { color: var(--muted); margin: 10px 0 18px; }
+.auth-card { padding: 22px 18px; border-top: 4px solid var(--tape); }
+.auth-card h1 { font-size: 20px; margin-bottom: 14px; }
+.auth-note { color: var(--muted); font-size: 14px; margin: 0 0 14px; }
+.auth-links { display: flex; justify-content: space-between; gap: 12px; margin-top: 16px; font-size: 14px; flex-wrap: wrap; }
+.auth .check { align-items: flex-start; font-size: 13px; color: var(--muted); }
+.auth .check input { margin-top: 3px; }
+.code-input { font: 500 24px var(--f-mono); letter-spacing: .3em; text-align: center; }
+a.btn { text-decoration: none; }
+
+/* ── плашки ── */
+.banners { max-width: 1080px; margin: 0 auto; padding: 12px 16px 0; display: grid; gap: 6px; }
+@media (min-width: 900px) { .banners { padding: 20px 36px 0; } }
+.banner { background: var(--tape); color: var(--tape-ink); border-radius: var(--r); padding: 9px 12px; font-size: 14px; font-weight: 500; }
+.banner a { color: inherit; font-weight: 600; }
+.banner.bad { background: var(--neg); color: #fff; }
+.banner.muted { background: var(--sheet-2); color: var(--muted); font-weight: 400; }
+
+/* ── главная ── */
+.transit { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
+.onboarding { margin-bottom: 12px; border-top: 4px solid var(--tape); }
+.onboarding ol { margin: 8px 0 14px; padding-left: 20px; color: var(--muted); display: grid; gap: 4px; }
+
+/* ── заказы ── */
+.order { display: grid; grid-template-columns: 56px minmax(0, 1fr) auto; gap: 12px; align-items: center; cursor: pointer; }
+.order:hover { border-color: var(--ink); }
+.order .thumb.sm { width: 56px; height: 56px; font-size: 9px; cursor: pointer; }
+.order-main { display: grid; gap: 3px; min-width: 0; }
+.order-main .row { gap: 8px; }
+.order-act { display: flex; gap: 6px; }
+@media (max-width: 480px) { .order { grid-template-columns: 56px minmax(0, 1fr); } .order-act { grid-column: 2; } }
+.thumb.sm { width: 56px; height: 56px; }
+.ret-choice { display: grid; gap: 8px; }
+.ret-choice button { flex-direction: column; align-items: flex-start; text-align: left; padding: 12px 14px; gap: 2px; }
+.ret-choice button span { font-weight: 400; font-size: 13px; opacity: .85; }
+button.ghost { border-color: transparent; color: var(--muted); }
+button.ghost:hover { color: var(--ink); }
+#otabs { flex-wrap: wrap; }
+
+</style>
+</head>
+<body>
+<div class="layout">
+    <nav class="nav" id="nav">
+      <div class="brand"><svg viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="12" fill="#15171a"/><path d="M13 46V20l13 15 12-15v26" fill="none" stroke="#fff" stroke-width="6" stroke-linejoin="miter" stroke-linecap="square"/><path d="M42 33l9-11" stroke="#ffd21f" stroke-width="6" stroke-linecap="square"/><path d="M44 21h8v8" fill="none" stroke="#ffd21f" stroke-width="6" stroke-linecap="square"/></svg><span>Marginly</span></div>
+      <a href="#" data-route="home"><svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg><span>Главная</span></a>
+      <a href="#batches" data-route="batches"><svg viewBox="0 0 24 24"><path d="M21 8l-9-5-9 5 9 5 9-5zM3 8v8l9 5 9-5V8M12 13v8"/></svg><span>Партии</span></a>
+      <a href="#stock" data-route="stock"><svg viewBox="0 0 24 24"><path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z"/></svg><span>Склад</span></a>
+      <a href="#orders" data-route="orders"><svg viewBox="0 0 24 24"><path d="M4 19V5M4 19h16M8 15l4-4 3 3 5-6"/></svg><span>Заказы</span></a>
+      <a href="#options" data-route="options"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg><span>Настройки</span></a>
+    </nav>
+    <main class="main"><div id="banner" class="banners" hidden></div><div id="view" class="view"></div></main>
+  </div>
+  <div id="sheet" class="sheet" hidden>
+    <div class="sheet-backdrop" data-close></div>
+    <div class="sheet-panel" role="dialog" aria-modal="true">
+      <div class="sheet-head"><h2 id="sheet-title"></h2><button class="icon-btn" data-close aria-label="Закрыть">✕</button></div>
+      <div id="sheet-body" class="sheet-body"></div>
+    </div>
+  </div>
+  <div id="lightbox" class="lightbox" hidden><img alt=""></div>
+  <div id="toast" class="toast" hidden></div>
+  <script>
+'use strict';
+/* Данные и расчёты Marginly. Хранилище — DB (см. sync.js), фото — ASSETS.
+   Заказы: ordered → shipped → sold, или cancelled / returned (restock | writeoff). */
+
+const DEFAULTS = {
+  cny_markup: 0.5, usd_rate: 89.5, cargo_usd_per_kg: 2.9, rf_delivery_rub: 2000,
+  stale_days: 14, cny_cbr: 12.3, cny_cbr_date: '',
+};
+const DEFAULT_CATEGORIES = [
+  ['Футболка', 0.3, 2000], ['Худи / свитшот', 0.8, 3000], ['Штаны', 0.6, 2500], ['Куртка / ветровка', 1.0, 3500],
+  ['Пуховик', 1.5, 4000], ['Обувь (с коробкой)', 1.5, 4000], ['Аксессуары', 0.2, 1000],
+];
+const COLLS = ['categories', 'batches', 'items', 'orders', 'expenses', 'photos'];
+const STATUS = {
+  ordered: 'Заказан', shipped: 'Отправлен', sold: 'Продан', cancelled: 'Отменён', returned: 'Возврат',
+};
+const S = { settings: {}, ready: false, failed: '', plan: null, email: '' };
+COLLS.forEach((c) => (S[c] = new Map()));
+let DB = null;
+let ASSETS = null;
+let API_BASE = '';
+
+const r2 = (x) => Math.round((x + Number.EPSILON) * 100) / 100;
+const pad = (n) => String(n).padStart(2, '0');
+function nowIso() { const d = new Date(); return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`; }
+const todayIso = () => nowIso().slice(0, 10);
+const parseTs = (s) => (s ? new Date(String(s).replace(' ', 'T')) : null);
+function daysSince(ts) { const d = parseTs(ts); return d && !isNaN(d) ? Math.floor((Date.now() - d) / 86400000) : 0; }
+
+class ApiError extends Error {}
+const fail = (msg) => { throw new ApiError(msg); };
+
+/* ───── состояние заказа ───── */
+const holdsStock = (o) => ['ordered', 'shipped', 'sold'].includes(o.status) || (o.status === 'returned' && o.return_action === 'writeoff');
+const isOpen = (o) => o.status === 'ordered' || o.status === 'shipped';
+
+/* ───── запись ───── */
+function clean(o) { const { id, ...rest } = o; return rest; }
+async function put(coll, id, data) {
+  const body = clean(data);
+  S[coll].set(id, { ...body, id });
+  await DB.collection(coll).doc(id).set(body);
+}
+async function patch(coll, id, data) {
+  const cur = S[coll].get(id);
+  if (!cur) fail('Запись не найдена');
+  await put(coll, id, { ...cur, ...data });
+}
+async function del(coll, id) { S[coll].delete(id); await DB.collection(coll).doc(id).delete(); }
+const newId = (coll) => DB.collection(coll).doc().id;
+const list = (coll) => [...S[coll].values()];
+
+/* ───── расчёт партии ───── */
+function calcBatch(p, items, orders, expenses) {
+  const totalWeight = items.reduce((a, i) => a + Math.max(i.qty, 0) * Math.max(i.weight_kg, 0), 0);
+  const has = totalWeight > 0;
+  const cargo = totalWeight * p.cargo_usd_per_kg * p.usd_rate;
+  const rf = has ? p.rf_delivery_rub : 0;
+  const logistics = cargo + rf;
+  const perKg = has ? logistics / totalWeight : 0;
+  const byItem = {};
+  orders.forEach((o) => (byItem[o.item_id] ||= []).push(o));
+
+  const calcs = {};
+  let buyTotal = 0, plannedRevenue = 0, revenue = 0, soldCost = 0, returnLoss = 0, returnExtra = 0, inTransit = 0;
+  const remainingPrices = [];
+  for (const it of items) {
+    const unitBuy = it.buy_cny * p.cny_rate;
+    const unitLog = it.weight_kg * perKg;
+    const unitCost = unitBuy + unitLog;
+    const os = byItem[it.id] || [];
+    const sum = (f, pred) => os.filter(pred).reduce((a, o) => a + f(o), 0);
+    const out = sum((o) => o.qty, holdsStock);
+    const sold = sum((o) => o.qty, (o) => o.status === 'sold');
+    const inOrders = sum((o) => o.qty, isOpen);
+    const writtenOff = sum((o) => o.qty, (o) => o.status === 'returned' && o.return_action === 'writeoff');
+    const itRevenue = sum((o) => o.price * o.qty - (o.extra_cost || 0), (o) => o.status === 'sold');
+    const itReturnCost = sum((o) => o.extra_cost || 0, (o) => o.status === 'returned');
+    const itTransit = sum((o) => o.price * o.qty, isOpen);
+    const stock = Math.max(it.qty - out, 0);
+    const unsold = Math.max(it.qty - sold - writtenOff, 0);
+    const itLoss = itReturnCost + writtenOff * unitCost;
+
+    buyTotal += unitBuy * it.qty;
+    plannedRevenue += it.sell_price * it.qty;
+    revenue += itRevenue;
+    soldCost += unitCost * sold;
+    returnLoss += itLoss;
+    returnExtra += itReturnCost;
+    inTransit += itTransit;
+    for (let k = 0; k < unsold; k++) remainingPrices.push(it.sell_price);
+    const margin = it.sell_price - unitCost;
+    calcs[it.id] = {
+      qty: it.qty, weight_kg: it.weight_kg, total_weight_kg: r2(it.weight_kg * it.qty),
+      unit_buy_rub: r2(unitBuy), unit_logistics_rub: r2(unitLog), unit_cost_rub: r2(unitCost),
+      unit_margin_rub: r2(margin), margin_pct: it.sell_price ? r2((margin / it.sell_price) * 100) : 0,
+      sold, in_orders: inOrders, written_off: writtenOff, stock,
+      revenue_rub: r2(itRevenue), profit_rub: r2(itRevenue - unitCost * sold - itLoss), in_transit_rub: r2(itTransit),
+    };
+  }
+  const totalCost = buyTotal + logistics + expenses;
+  const plannedProfit = plannedRevenue - totalCost;
+  // окупаемость — живые деньги: получено минус всё потраченное (списанная вещь уже в закупке)
+  const payback = revenue - returnExtra - totalCost;
+  let breakeven = 0;
+  if (payback < 0) {
+    breakeven = null;
+    let acc = 0;
+    const sorted = remainingPrices.sort((a, b) => b - a);
+    for (let n = 0; n < sorted.length; n++) { acc += sorted[n]; if (acc >= -payback - 1e-9) { breakeven = n + 1; break; } }
+  }
+  const unitsTotal = items.reduce((a, i) => a + i.qty, 0);
+  const unitsSold = Object.values(calcs).reduce((a, c) => a + c.sold, 0);
+  const unitsStock = Object.values(calcs).reduce((a, c) => a + c.stock, 0);
+  return {
+    calc: {
+      total_weight_kg: r2(totalWeight), cargo_rub: r2(cargo), rf_delivery_rub: r2(rf), logistics_rub: r2(logistics),
+      logistics_per_kg_rub: r2(perKg), buy_rub: r2(buyTotal), expenses_rub: r2(expenses), total_cost_rub: r2(totalCost),
+      units_total: unitsTotal, units_sold: unitsSold, units_left: unitsStock,
+      planned_revenue_rub: r2(plannedRevenue), planned_profit_rub: r2(plannedProfit), revenue_rub: r2(revenue),
+      return_loss_rub: r2(returnLoss), in_transit_rub: r2(inTransit),
+      profit_rub: r2(revenue - soldCost - returnLoss - expenses), payback_rub: r2(payback),
+      roi_pct: totalCost ? r2((plannedProfit / totalCost) * 100) : 0, breakeven_units: breakeven,
+    },
+    items: calcs,
+  };
+}
+
+/* ───── сборка данных для экрана ───── */
+function settingsOut() {
+  const s = { ...DEFAULTS, ...S.settings };
+  return { ...s, cny_rate: r2(s.cny_cbr + s.cny_markup) };
+}
+const photoUrl = (p) => (p.url ? API_BASE + p.url : '');
+function photosOf(itemId) {
+  return list('photos').filter((p) => p.item_id === itemId).sort((a, b) => (a.created_at > b.created_at ? 1 : -1))
+    .map((p) => ({ id: p.id, url: photoUrl(p) }));
+}
+function batchFull(id) {
+  const raw = S.batches.get(id);
+  if (!raw) fail('Партия не найдена');
+  const b = { ...raw };
+  const cnyRate = r2(b.cny_cbr + b.cny_markup);
+  const cats = S.categories;
+  const items = list('items').filter((i) => i.batch_id === id)
+    .sort((a, b2) => (a.created_at === b2.created_at ? (a.id > b2.id ? 1 : -1) : a.created_at > b2.created_at ? 1 : -1))
+    .map((i) => ({ ...i, listed: !!i.listed, category: cats.get(i.category_id)?.name || null }));
+  const ids = new Set(items.map((i) => i.id));
+  const orders = list('orders').filter((o) => ids.has(o.item_id));
+  const expenses = list('expenses').filter((e) => e.batch_id === id).sort((a, c) => (a.spent_at < c.spent_at ? 1 : -1));
+  const res = calcBatch({ cny_rate: cnyRate, usd_rate: b.usd_rate, cargo_usd_per_kg: b.cargo_usd_per_kg, rf_delivery_rub: b.rf_delivery_rub },
+    items, orders, expenses.reduce((a, e) => a + e.amount, 0));
+  for (const i of items) {
+    i.calc = res.items[i.id];
+    i.photos = photosOf(i.id);
+    i.batch_name = b.name;
+    i.batch_status = b.status;
+  }
+  return { ...b, cny_rate: cnyRate, calc: res.calc, items, expenses, missing_buy_price: items.filter((i) => !(i.buy_cny > 0)).length };
+}
+const allBatches = () => list('batches').sort((a, b) => (a.created_at < b.created_at ? 1 : a.created_at > b.created_at ? -1 : 0)).map((b) => batchFull(b.id));
+const outCount = (itemId) => list('orders').filter((o) => o.item_id === itemId && holdsStock(o)).reduce((a, o) => a + o.qty, 0);
+
+/* ───── тариф ───── */
+const planLimits = () => S.plan?.limits || null;
+const canWrite = () => !S.plan || S.plan.can_write !== false;
+function checkLimit(coll) {
+  const lim = planLimits();
+  if (!lim || !(coll in lim)) return;
+  if (S[coll].size >= lim[coll]) {
+    fail(coll === 'batches'
+      ? `В пробный период — только ${lim.batches} партия. Оформи подписку, чтобы добавить ещё`
+      : `В пробный период — до ${lim.items} товаров. Оформи подписку, чтобы добавить ещё`);
+  }
+}
+
+/* ───── операции ───── */
+const READ_OPS = new Set(['settings', 'categories', 'batches', 'batch', 'stock', 'orders', 'expenses', 'dashboard']);
+const ops = {
+  settings: () => settingsOut(),
+  async saveSettings(body) {
+    const next = { ...DEFAULTS, ...S.settings };
+    for (const [k, v] of Object.entries(body)) if (v !== null && v !== undefined && k in DEFAULTS && k !== 'cny_cbr_date') next[k] = Number(v);
+    if (body.cny_cbr != null) next.cny_cbr_date = `вручную ${todayIso()}`;
+    S.settings = next;
+    await DB.doc('app/settings').set(next);
+    return settingsOut();
+  },
+  async setCbrRate(rate, date) {
+    const cur = { ...DEFAULTS, ...S.settings };
+    if (String(cur.cny_cbr_date).startsWith('вручную') && cur.cny_cbr_date.endsWith(todayIso())) return false;
+    if (Math.abs(cur.cny_cbr - rate) < 0.00005 && cur.cny_cbr_date === date) return false;
+    S.settings = { ...cur, cny_cbr: rate, cny_cbr_date: date };
+    await DB.doc('app/settings').set(S.settings);
+    return true;
+  },
+  categories: () => list('categories').sort((a, b) => a.sort - b.sort || (a.id > b.id ? 1 : -1)),
+  async addDefaultCategories() {
+    let n = 0;
+    for (const [name, weight_kg, default_price] of DEFAULT_CATEGORIES) await put('categories', `c${n + 1}`, { name, weight_kg, default_price, sort: n++ });
+  },
+  async addCategory(b) {
+    const sort = Math.max(0, ...list('categories').map((c) => c.sort || 0)) + 1;
+    await put('categories', newId('categories'), { name: b.name.trim(), weight_kg: b.weight_kg, default_price: b.default_price || 0, sort });
+  },
+  async saveCategory(id, b) {
+    if (!b.name?.trim()) fail('Впиши название типа');
+    if (!(b.weight_kg > 0)) fail('Вес должен быть больше нуля');
+    await patch('categories', id, { name: b.name.trim(), weight_kg: b.weight_kg, default_price: b.default_price || 0 });
+  },
+  delCategory: (id) => del('categories', id),
+
+  batches: () => allBatches().map((b) => ({ ...b, items_count: b.items.length })),
+  batch: (id) => batchFull(id),
+  async createBatch(body) {
+    checkLimit('batches');
+    const s = settingsOut();
+    const status = body.status || 'transit';
+    const id = newId('batches');
+    const pick = (k) => (body[k] === null || body[k] === undefined || body[k] === '' ? s[k] : Number(body[k]));
+    await put('batches', id, {
+      name: (body.name || '').trim() || `Партия №${S.batches.size + 1}`, status, created_at: nowIso(),
+      received_at: status === 'received' ? nowIso() : null,
+      cny_cbr: pick('cny_cbr'), cny_markup: pick('cny_markup'), usd_rate: pick('usd_rate'),
+      cargo_usd_per_kg: pick('cargo_usd_per_kg'), rf_delivery_rub: pick('rf_delivery_rub'), note: body.note || '',
+    });
+    return batchFull(id);
+  },
+  async saveBatch(id, body) {
+    const cur = S.batches.get(id);
+    if (!cur) fail('Партия не найдена');
+    const data = {};
+    for (const k of ['name', 'status', 'note']) if (body[k] != null) data[k] = body[k];
+    for (const k of ['cny_cbr', 'cny_markup', 'usd_rate', 'cargo_usd_per_kg', 'rf_delivery_rub']) if (body[k] != null) data[k] = Number(body[k]);
+    if ('name' in data) data.name = data.name.trim() || cur.name;
+    if (data.status === 'received' && !cur.received_at) data.received_at = nowIso();
+    await patch('batches', id, data);
+    return batchFull(id);
+  },
+  async delBatch(id) {
+    for (const i of list('items').filter((i) => i.batch_id === id)) await ops.delItem(i.id, true);
+    for (const e of list('expenses').filter((e) => e.batch_id === id)) await del('expenses', e.id);
+    await del('batches', id);
+  },
+
+  async createItem(batchId, b) {
+    batchFull(batchId);
+    checkLimit('items');
+    const cat = b.category_id ? S.categories.get(b.category_id) : null;
+    if (b.category_id && !cat) fail('Нет такого типа вещи');
+    const weight = b.weight_kg || cat?.weight_kg;
+    if (!weight) fail('Выбери тип вещи — по нему ставится вес');
+    if (!b.title?.trim()) fail('Впиши название');
+    if (!(b.qty >= 1)) fail('Количество — от 1 шт');
+    await put('items', newId('items'), {
+      batch_id: batchId, category_id: b.category_id || null, title: b.title.trim(), color: (b.color || '').trim(), size: (b.size || '').trim(),
+      qty: Math.floor(b.qty), weight_kg: weight, buy_cny: b.buy_cny || 0,
+      sell_price: b.sell_price ?? cat?.default_price ?? 0, listed: !!b.listed, note: b.note || '', created_at: nowIso(),
+    });
+    return batchFull(batchId);
+  },
+  async saveItem(id, body) {
+    const it = S.items.get(id);
+    if (!it) fail('Товар не найден');
+    const data = {};
+    for (const [k, v] of Object.entries(body)) if (v !== null && v !== undefined && k !== 'reserved') data[k] = v;
+    if (data.category_id && data.category_id !== it.category_id && body.weight_kg == null) {
+      const cat = S.categories.get(data.category_id);
+      if (!cat) fail('Нет такого типа вещи');
+      data.weight_kg = cat.weight_kg;
+    }
+    if (data.title !== undefined && !String(data.title).trim()) fail('Впиши название');
+    if (data.weight_kg !== undefined && !(data.weight_kg > 0)) fail('Вес должен быть больше нуля');
+    if (data.buy_cny !== undefined && data.buy_cny < 0) fail('Цена не может быть отрицательной');
+    const qty = data.qty ?? it.qty;
+    const out = outCount(id);
+    if (qty < 1) fail('Количество — от 1 шт');
+    if (qty < out) fail(`${out} шт уже в заказах или проданы — меньше нельзя`);
+    if ('listed' in data) data.listed = !!data.listed;
+    await patch('items', id, data);
+    return batchFull(it.batch_id);
+  },
+  async delItem(id, quiet) {
+    const it = S.items.get(id);
+    if (!it) return;
+    for (const p of list('photos').filter((p) => p.item_id === id)) await ops.delPhoto(p.id);
+    for (const o of list('orders').filter((o) => o.item_id === id)) await del('orders', o.id);
+    await del('items', id);
+    return quiet ? null : batchFull(it.batch_id);
+  },
+  stock() {
+    const staleDays = settingsOut().stale_days;
+    const out = [];
+    for (const b of allBatches()) for (const i of b.items) {
+      i.days_in_stock = b.status === 'received' ? daysSince(b.received_at) : 0;
+      i.stale = b.status === 'received' && i.calc.stock > 0 && i.days_in_stock >= staleDays;
+      out.push(i);
+    }
+    return out;
+  },
+
+  async uploadPhotos(itemId, files) {
+    if (!ASSETS) fail('Фото сейчас недоступны');
+    for (const f of files) {
+      const blob = await compress(f);
+      const res = await ASSETS.upload(blob);
+      await put('photos', newId('photos'), { item_id: itemId, asset_id: res.id, url: res.url, created_at: nowIso() });
+    }
+    return photosOf(itemId);
+  },
+  async delPhoto(id) {
+    const p = S.photos.get(id);
+    if (!p) return;
+    await del('photos', id);
+    try { await ASSETS?.delete(p.asset_id); } catch { /* удалим при следующей возможности */ }
+  },
+
+  /* ── заказы ── */
+  async createOrder(itemId, b) {
+    const it = S.items.get(itemId);
+    if (!it) fail('Товар не найден');
+    const qty = Math.floor(b.qty || 0);
+    if (qty < 1) fail('Количество — от 1 шт');
+    const free = it.qty - outCount(itemId);
+    if (qty > free) fail(`В наличии только ${Math.max(free, 0)} шт`);
+    const status = b.status === 'sold' ? 'sold' : 'ordered';
+    const ts = b.date || nowIso();
+    const id = newId('orders');
+    await put('orders', id, {
+      item_id: itemId, qty, price: b.price ?? it.sell_price, extra_cost: b.extra_cost || 0, status, return_action: null,
+      track: (b.track || '').trim(), buyer: (b.buyer || '').trim(), note: b.note || '', channel: b.channel || 'Авито',
+      created_at: ts, shipped_at: null, sold_at: status === 'sold' ? ts : null, closed_at: status === 'sold' ? ts : null,
+    });
+    return { id, batch: batchFull(it.batch_id) };
+  },
+  async setOrderStatus(id, status, extra = {}) {
+    const o = S.orders.get(id);
+    if (!o) fail('Заказ не найден');
+    const allowed = { ordered: ['shipped', 'sold', 'cancelled'], shipped: ['sold', 'cancelled', 'returned'], sold: ['returned'], returned: [], cancelled: [] };
+    if (!allowed[o.status]?.includes(status)) fail(`Из статуса «${STATUS[o.status]}» нельзя перейти в «${STATUS[status]}»`);
+    const ts = nowIso();
+    const data = { status };
+    if (status === 'shipped') { data.shipped_at = ts; if (extra.track != null) data.track = String(extra.track).trim(); }
+    if (status === 'sold') { data.sold_at = ts; data.closed_at = ts; }
+    if (status === 'cancelled') data.closed_at = ts;
+    if (status === 'returned') {
+      if (!['restock', 'writeoff'].includes(extra.return_action)) fail('Выбери, что делать с вещью: вернуть на склад или списать');
+      data.return_action = extra.return_action;
+      data.closed_at = ts;
+    }
+    await patch('orders', id, data);
+  },
+  async undoOrderStatus(id, prev) { await put('orders', id, prev); },
+  async saveOrder(id, body) {
+    const data = {};
+    for (const k of ['price', 'extra_cost']) if (body[k] != null) { if (body[k] < 0) fail('Сумма не может быть отрицательной'); data[k] = Number(body[k]); }
+    for (const k of ['track', 'buyer', 'note']) if (body[k] != null) data[k] = String(body[k]).trim();
+    await patch('orders', id, data);
+  },
+  delOrder: (id) => del('orders', id),
+  orders() {
+    const costs = {};
+    for (const b of allBatches()) for (const i of b.items) costs[i.id] = i.calc.unit_cost_rub;
+    return list('orders').map((o) => {
+      const it = S.items.get(o.item_id) || {};
+      const b = S.batches.get(it.batch_id) || {};
+      const unit = costs[o.item_id] || 0;
+      let profit = null;
+      if (o.status === 'sold') profit = r2(o.price * o.qty - (o.extra_cost || 0) - unit * o.qty);
+      if (o.status === 'returned') profit = -r2((o.extra_cost || 0) + (o.return_action === 'writeoff' ? unit * o.qty : 0));
+      return { ...o, title: it.title, color: it.color, size: it.size, batch_id: it.batch_id, batch_name: b.name,
+        photo: photosOf(o.item_id)[0]?.url || null, sell_price: it.sell_price, unit_cost_rub: unit, profit_rub: profit };
+    }).sort((a, b) => (a.created_at < b.created_at ? 1 : a.created_at > b.created_at ? -1 : 0));
+  },
+
+  expenses: () => list('expenses').map((e) => ({ ...e, batch_name: S.batches.get(e.batch_id)?.name || null })).sort((a, b) => (a.spent_at < b.spent_at ? 1 : -1)),
+  async addExpense(b) {
+    if (!b.title?.trim()) fail('Впиши, на что расход');
+    if (!(b.amount > 0)) fail('Сумма должна быть больше нуля');
+    await put('expenses', newId('expenses'), { batch_id: b.batch_id || null, title: b.title.trim(), amount: b.amount, spent_at: b.spent_at || nowIso() });
+  },
+  delExpense: (id) => del('expenses', id),
+
+  dashboard() {
+    const s = settingsOut();
+    const batches = allBatches();
+    const general = list('expenses').filter((e) => !e.batch_id).reduce((a, e) => a + e.amount, 0);
+    const total = (k) => batches.reduce((a, b) => a + b.calc[k], 0);
+    const invested = total('total_cost_rub') + general;
+    const revenue = total('revenue_rub');
+    const profit = total('profit_rub') - general;
+    const planned = total('planned_profit_rub') - general;
+
+    const today = new Date(); today.setHours(0, 0, 0, 0);
+    const start = new Date(today); start.setDate(start.getDate() - ((today.getDay() + 6) % 7) - 49);
+    const weeks = Array.from({ length: 8 }, (_, n) => { const d = new Date(start); d.setDate(d.getDate() + n * 7); return { week: d, revenue: 0, profit: 0, units: 0 }; });
+    const itemsById = {};
+    batches.forEach((b) => b.items.forEach((i) => (itemsById[i.id] = i)));
+    for (const o of list('orders')) {
+      if (o.status !== 'sold') continue;
+      const d = parseTs(o.sold_at || o.created_at); if (!d || isNaN(d)) continue;
+      const idx = Math.floor((d - start) / (7 * 86400000));
+      if (idx < 0 || idx > 7) continue;
+      const net = o.price * o.qty - (o.extra_cost || 0);
+      weeks[idx].revenue += net;
+      weeks[idx].profit += net - (itemsById[o.item_id]?.calc.unit_cost_rub || 0) * o.qty;
+      weeks[idx].units += o.qty;
+    }
+    const open = list('orders').filter(isOpen);
+    const items = Object.values(itemsById);
+    const top = items.filter((i) => i.calc.sold > 0)
+      .map((i) => ({ id: i.id, title: i.title, color: i.color, sold: i.calc.sold, profit: i.calc.profit_rub }))
+      .sort((a, b) => b.profit - a.profit).slice(0, 5);
+    const stale = [];
+    for (const b of batches) {
+      if (b.status !== 'received') continue;
+      const days = daysSince(b.received_at);
+      if (days < s.stale_days) continue;
+      for (const i of b.items) if (i.calc.stock > 0) stale.push({ id: i.id, title: i.title, color: i.color, stock: i.calc.stock, days, batch_id: b.id });
+    }
+    return {
+      settings: s, invested_rub: r2(invested), revenue_rub: r2(revenue), profit_rub: r2(profit), planned_profit_rub: r2(planned),
+      payback_rub: r2(revenue - invested), roi_pct: invested ? r2((planned / invested) * 100) : 0,
+      units_total: total('units_total'), units_sold: total('units_sold'), units_left: total('units_left'),
+      stock_value_rub: r2(items.reduce((a, i) => a + i.calc.stock * i.sell_price, 0)), general_expenses_rub: r2(general),
+      open_orders: open.length, open_orders_rub: r2(open.reduce((a, o) => a + o.price * o.qty, 0)),
+      shipped_orders: open.filter((o) => o.status === 'shipped').length,
+      missing_buy_price: batches.reduce((a, b) => a + b.missing_buy_price, 0),
+      weeks: weeks.map((w) => ({ ...w, revenue: r2(w.revenue), profit: r2(w.profit) })), top, stale,
+      batches: batches.map((b) => ({ id: b.id, name: b.name, status: b.status, missing_buy_price: b.missing_buy_price, ...b.calc })),
+    };
+  },
+};
+
+/* Обёртка: проверка тарифа и понятные сообщения об ошибках. */
+async function api(name, ...args) {
+  if (!DB) throw new Error(S.failed || 'Данные ещё загружаются');
+  if (!READ_OPS.has(name) && !canWrite()) throw new Error('Пробный период закончился. Оформи подписку, чтобы вносить изменения');
+  try { return await ops[name](...args); } catch (e) {
+    if (e instanceof ApiError) throw e;
+    if (e?.message && e.user) throw new Error(e.message);
+    throw new Error('Не получилось сохранить, попробуй ещё раз');
+  }
+}
+
+/* Подписка на данные: после каждого изменения — перерисовка. */
+function connectStore(onChange) {
+  DB.doc('app/settings').onSnapshot((snap) => { S.settings = snap.exists ? { ...snap.data() } : {}; onChange(); });
+  for (const c of COLLS) {
+    DB.collection(c).onSnapshot((snap) => {
+      S[c] = new Map(snap.docs.map((d) => [d.id, { ...d.data(), id: d.id }]));
+      onChange();
+    });
+  }
+  S.ready = true;
+}
+
+'use strict';
+/* Связь с сервером Marginly.
+   Данные лежат на устройстве (localStorage), правки копятся в очереди и уходят на сервер
+   при каждом изменении, раз в 30 секунд и при возвращении в приложение. Без сети всё работает,
+   синхронизация догонит позже. */
+
+const SESSION_KEY = 'mg:session';
+
+function loadSession() { try { return JSON.parse(localStorage.getItem(SESSION_KEY)) || null; } catch { return null; } }
+function saveSession(s) { try { s ? localStorage.setItem(SESSION_KEY, JSON.stringify(s)) : localStorage.removeItem(SESSION_KEY); } catch { /* приватный режим */ } }
+
+class HttpError extends Error {
+  constructor(status, message) { super(message); this.status = status; this.user = true; }
+}
+
+async function http(path, { method = 'GET', body, token, form } = {}) {
+  const headers = {};
+  if (token) headers.Authorization = 'Bearer ' + token;
+  if (body !== undefined && !form) headers['Content-Type'] = 'application/json';
+  let res;
+  try {
+    res = await fetch(API_BASE + path, { method, headers, body: form || (body !== undefined ? JSON.stringify(body) : undefined) });
+  } catch {
+    throw new HttpError(0, 'Нет связи с сервером. Проверь интернет');
+  }
+  const data = res.headers.get('content-type')?.includes('json') ? await res.json() : null;
+  if (!res.ok) {
+    let msg = data?.detail || `Ошибка сервера (${res.status})`;
+    if (Array.isArray(msg)) msg = 'Проверь заполненные поля';
+    throw new HttpError(res.status, msg);
+  }
+  return data;
+}
+
+function makeSyncDb({ token, email, onPlan, onRejected, onStatus, onAuthLost }) {
+  const key = 'mg:data:' + email.toLowerCase();
+  const load = () => { try { return JSON.parse(localStorage.getItem(key)) || {}; } catch { return {}; } };
+  const st = load();
+  const docs = new Map(Object.entries(st.docs || {}));
+  let shadow = st.shadow || {};        // последнее состояние на сервере
+  let pending = st.pending || {};      // path → {data, v}
+  let cursor = st.cursor || 0;
+  let ver = Math.max(0, ...Object.values(pending).map((p) => p.v));
+  const subs = new Set();
+  let timer = null, running = false, again = false, backoff = 2000;
+
+  const persist = () => {
+    try { localStorage.setItem(key, JSON.stringify({ docs: Object.fromEntries(docs), shadow, pending, cursor })); }
+    catch { onStatus?.('full'); }
+  };
+  const notify = () => setTimeout(() => subs.forEach((f) => f()), 0);
+  const snap = (path) => ({ id: path.split('/').pop(), exists: docs.has(path), data: () => docs.get(path), metadata: { fromCache: false, hasPendingWrites: path in pending } });
+  const rid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+
+  function write(path, data) {
+    if (data === null) docs.delete(path); else docs.set(path, JSON.parse(JSON.stringify(data)));
+    pending[path] = { data: data === null ? null : docs.get(path), v: ++ver };
+    persist(); notify(); schedule(600);
+  }
+  function schedule(ms) { clearTimeout(timer); timer = setTimeout(syncNow, ms); }
+
+  async function syncNow() {
+    if (running) { again = true; return; }
+    running = true;
+    try {
+      do {
+        again = false;
+        const sent = Object.entries(pending).slice(0, 400).map(([path, p]) => ({ path, data: p.data, v: p.v }));
+        const res = await http('/api/sync', { method: 'POST', token, body: { cursor, changes: sent.map(({ path, data }) => ({ path, data })) } });
+        const rejected = new Map(res.rejected.map((r) => [r.path, r.reason]));
+        for (const s of sent) if (pending[s.path]?.v === s.v) delete pending[s.path];
+        for (const ch of res.changes) {
+          if (ch.data === null) delete shadow[ch.path]; else shadow[ch.path] = ch.data;
+          if (!pending[ch.path]) { if (ch.data === null) docs.delete(ch.path); else docs.set(ch.path, ch.data); }
+        }
+        for (const path of rejected.keys()) {
+          if (pending[path]) continue;
+          if (path in shadow) docs.set(path, shadow[path]); else docs.delete(path);
+        }
+        cursor = res.cursor;
+        persist();
+        onPlan?.(res.plan);
+        if (rejected.size) onRejected?.([...new Set(rejected.values())]);
+        notify();
+        if (res.more || Object.keys(pending).length) again = true;
+      } while (again);
+      backoff = 2000;
+      onStatus?.('online');
+      schedule(30000);
+    } catch (e) {
+      if (e.status === 401) { onAuthLost?.(); return; }
+      onStatus?.('offline');
+      schedule(backoff);
+      backoff = Math.min(backoff * 2, 60000);
+    } finally {
+      running = false;
+    }
+  }
+
+  const docRef = (path) => ({
+    id: path.split('/').pop(), path,
+    get: async () => snap(path),
+    set: async (d) => write(path, d),
+    update: async (d) => write(path, { ...(docs.get(path) || {}), ...d }),
+    delete: async () => write(path, null),
+    onSnapshot: (next) => { const f = () => next(snap(path)); subs.add(f); setTimeout(f, 0); return () => subs.delete(f); },
+  });
+  const collRef = (c) => ({
+    path: c,
+    doc: (id) => docRef(`${c}/${id || rid()}`),
+    onSnapshot: (next) => {
+      const f = () => {
+        const l = [...docs.keys()].filter((k) => k.startsWith(c + '/') && k.split('/').length === 2).map(snap);
+        next({ docs: l, size: l.length, empty: !l.length, metadata: { fromCache: false, hasPendingWrites: false } });
+      };
+      subs.add(f); setTimeout(f, 0); return () => subs.delete(f);
+    },
+  });
+
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) schedule(100); });
+  window.addEventListener('online', () => schedule(100));
+
+  return {
+    doc: docRef, collection: collRef, syncNow,
+    isEmpty: () => cursor === 0 && !docs.size,
+    pendingCount: () => Object.keys(pending).length,
+    wipe: () => { try { localStorage.removeItem(key); } catch { /* ничего */ } },
+  };
+}
+
+function makeRemoteAssets(token) {
+  return {
+    upload: async (blob) => {
+      const form = new FormData();
+      form.append('file', blob, 'photo.jpg');
+      return http('/api/blobs', { method: 'POST', token, form });
+    },
+    delete: async (id) => http('/api/blobs/' + encodeURIComponent(id), { method: 'DELETE', token }),
+  };
+}
+
+'use strict';
+
+/* ───────────── утилиты ───────────── */
+const $ = (s, el = document) => el.querySelector(s);
+const $$ = (s, el = document) => [...el.querySelectorAll(s)];
+const esc = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const nf0 = new Intl.NumberFormat('ru-RU', { maximumFractionDigits: 0 });
+const nf2 = new Intl.NumberFormat('ru-RU', { maximumFractionDigits: 2 });
+const rub = (v) => `${nf0.format(Math.round(v || 0))} ₽`;
+const sgn = (v) => (v > 0.5 ? 'pos' : v < -0.5 ? 'neg' : '');
+const rubS = (v) => `<span class="${sgn(v)}">${v > 0.5 ? '+' : ''}${rub(v)}</span>`;
+const kg = (v) => `${nf2.format(v)} кг`;
+const fmtDate = (s) => (s ? new Date(s.replace(' ', 'T')).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' }) : '');
+const itemName = (i) => [i.title, i.color, i.size && `р. ${i.size}`].filter(Boolean).join(' · ');
+const plural = (n, a, b, c) => { const m = n % 10, h = n % 100; return m === 1 && h !== 11 ? a : m >= 2 && m <= 4 && (h < 10 || h >= 20) ? b : c; };
+
+let toastTimer;
+function toast(msg, action) {
+  const t = $('#toast');
+  t.textContent = msg; t.hidden = false;
+  if (action) {
+    const b = document.createElement('button');
+    b.className = 'toast-btn'; b.textContent = action.label;
+    b.onclick = async () => { t.hidden = true; clearTimeout(toastTimer); try { await action.run(); } catch (e) { toast(e.message); } };
+    t.append(b);
+  }
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => (t.hidden = true), action ? 6000 : 2600);
+}
+const guard = (fn) => async (...a) => { try { await fn(...a); } catch (e) { toast(e.message); } };
+
+/* ───────────── окно-шторка ───────────── */
+function openSheet(title, html, onMount) {
+  $('#sheet-title').textContent = title;
+  $('#sheet-body').innerHTML = html;
+  $('#sheet').hidden = false;
+  document.body.style.overflow = 'hidden';
+  onMount?.($('#sheet-body'));
+  const first = $('#sheet-body [autofocus]');
+  if (first && matchMedia('(min-width: 700px)').matches) first.focus();
+}
+function closeSheet() { $('#sheet').hidden = true; document.body.style.overflow = ''; }
+$('#sheet').addEventListener('click', (e) => { if (e.target.closest('[data-close]')) closeSheet(); });
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { closeSheet(); $('#lightbox').hidden = true; } });
+function showPhoto(url) { const lb = $('#lightbox'); $('img', lb).src = url; lb.hidden = false; }
+$('#lightbox').addEventListener('click', () => ($('#lightbox').hidden = true));
+
+function formData(form) {
+  const o = {};
+  for (const el of form.elements) {
+    if (!el.name) continue;
+    if (el.type === 'checkbox') o[el.name] = el.checked;
+    else if (el.type === 'number') o[el.name] = el.value === '' ? null : Number(el.value);
+    else o[el.name] = el.value;
+  }
+  return o;
+}
+
+/* ───────────── фото: сжатие на устройстве ───────────── */
+async function compress(file, max = 1600) {
+  if (!file.type.startsWith('image/')) return file;
+  try {
+    const bmp = await createImageBitmap(file, { imageOrientation: 'from-image' });
+    const k = Math.min(1, max / Math.max(bmp.width, bmp.height));
+    const c = document.createElement('canvas');
+    c.width = Math.round(bmp.width * k); c.height = Math.round(bmp.height * k);
+    c.getContext('2d').drawImage(bmp, 0, 0, c.width, c.height);
+    const blob = await new Promise((r) => c.toBlob(r, 'image/jpeg', 0.85));
+    return blob ? new File([blob], 'photo.jpg', { type: 'image/jpeg' }) : file;
+  } catch { return file; }
+}
+/* ───────────── роутер ───────────── */
+const routes = [
+  [/^$/, 'home', viewHome],
+  [/^batches$/, 'batches', viewBatches],
+  [/^batch-(.+)$/, 'batches', viewBatch],
+  [/^stock$/, 'stock', viewStock],
+  [/^orders$/, 'orders', viewOrders],
+  [/^options$/, 'options', viewSettings],
+];
+const view = $('#view');
+let current = null;
+
+async function render() {
+  if (document.body.classList.contains('auth-mode')) return;
+  const path = location.hash.slice(1);
+  if (!S.ready) {
+    view.innerHTML = S.failed ? `<div class="empty"><b>Не получилось открыть данные</b>${esc(S.failed)}</div>`
+      : '<div class="empty"><b>Загружаю твои партии…</b>Склад, продажи и фото подтягиваются из хранилища.</div>';
+    return;
+  }
+  for (const [re, nav, fn] of routes) {
+    const m = path.match(re);
+    if (!m) continue;
+    $$('#nav a').forEach((a) => a.classList.toggle('active', a.dataset.route === nav));
+    current = () => fn(...m.slice(1));
+    try { await current(); } catch (e) { view.innerHTML = `<div class="empty"><b>Не получилось открыть</b>${esc(e.message)}<br><a href="#">На главную</a></div>`; }
+    return;
+  }
+  location.hash = '';
+}
+const rerender = () => (current ? current().catch((e) => toast(e.message)) : render());
+window.addEventListener('hashchange', () => { closeSheet(); window.scrollTo(0, 0); render(); });
+
+let renderTimer;
+function onStoreChange() {
+  clearTimeout(renderTimer);
+  renderTimer = setTimeout(() => {
+    const a = document.activeElement;
+    if (a && view.contains(a) && /INPUT|SELECT|TEXTAREA/.test(a.tagName)) { a.addEventListener('blur', onStoreChange, { once: true }); return; }
+    if (!current || !S.ready) render(); else rerender();
+  }, 120);
+}
+
+function ask(msg, yes = 'Удалить') {
+  return new Promise((resolve) => {
+    openSheet('Точно?', `<p style="margin-top:0">${esc(msg)}</p><div class="row"><button class="danger" id="ask-yes">${esc(yes)}</button><button id="ask-no">Отмена</button></div>`, (el) => {
+      $('#ask-yes', el).onclick = () => { closeSheet(); resolve(true); };
+      $('#ask-no', el).onclick = () => { closeSheet(); resolve(false); };
+    });
+  });
+}
+
+/* ───────────── главная ───────────── */
+async function viewHome() {
+  const d = await api('dashboard');
+  const s = d.settings;
+  const paid = d.invested_rub > 0 ? Math.min(100, (d.revenue_rub / d.invested_rub) * 100) : 0;
+  view.innerHTML = `
+    <div class="page-head"><h1>Главная</h1>
+      <span class="chip" title="Курс юаня для выкупа">¥ ${nf2.format(s.cny_cbr)} + ${nf2.format(s.cny_markup)} = <b>${nf2.format(s.cny_rate)} ₽</b></span></div>
+    ${d.missing_buy_price ? `<div class="alert" style="margin-bottom:12px"><div>У ${d.missing_buy_price} ${plural(d.missing_buy_price, 'позиции', 'позиций', 'позиций')} не вбита цена выкупа в юанях — прибыль пока посчитана без неё. <a href="#batches">Вбить цены</a></div></div>` : ''}
+    ${d.open_orders ? `<a class="card list-link transit" href="#orders"><span><b>В пути: ${d.open_orders} ${plural(d.open_orders, 'заказ', 'заказа', 'заказов')}</b> на ${rub(d.open_orders_rub)}</span><span class="small muted">${d.shipped_orders ? `${d.shipped_orders} отправлено` : 'ещё не отправлены'} ›</span></a>` : ''}
+    ${!d.batches.length ? `<div class="card onboarding"><b>С чего начать</b><ol><li>Создай партию — то, что заказал из Китая.</li><li>Добавь в неё вещи и цены выкупа в юанях: вес, карго и себестоимость посчитаются сами.</li><li>Когда покупатель оформит заказ — жми «Новый заказ» на складе.</li></ol><a class="btn primary" href="#batches">Создать партию</a></div>` : ''}
+    <div class="grid kpis">
+      <div class="card kpi hero"><div class="label">Чистая прибыль с продаж</div><div class="value num">${rubS(d.profit_rub)}</div>
+        <div class="hint">Если продашь всё по своим ценам — ${rubS(d.planned_profit_rub)} · ROI ${nf0.format(d.roi_pct)}%</div></div>
+      <div class="card kpi"><div class="label">Вложено</div><div class="value num">${rub(d.invested_rub)}</div><div class="hint">выкуп + карго + доставка + расходы</div></div>
+      <div class="card kpi"><div class="label">Получено</div><div class="value num">${rub(d.revenue_rub)}</div><div class="hint">${d.units_sold} шт продано</div></div>
+      <div class="card kpi"><div class="label">${d.payback_rub >= 0 ? 'Отбито, в плюсе на' : 'До окупаемости'}</div><div class="value num ${d.payback_rub >= 0 ? 'pos' : ''}">${rub(Math.abs(d.payback_rub))}</div>
+        <div class="progress"><div style="width:${paid}%"></div></div></div>
+      <div class="card kpi"><div class="label">На складе</div><div class="value num">${d.units_left} шт</div><div class="hint">на ${rub(d.stock_value_rub)} по ценам продажи</div></div>
+    </div>
+
+    <div class="section"><h3>Продажи по неделям</h3><div class="card">${chart(d.weeks)}</div></div>
+
+    <div class="section"><h3>Партии</h3>
+      ${d.batches.length ? d.batches.map((b) => {
+        const pct = b.total_cost_rub ? Math.min(100, (b.revenue_rub / b.total_cost_rub) * 100) : 0;
+        return `<a class="card list-link" href="#batch-${b.id}">
+          <div class="row"><b>${esc(b.name)}</b>${statusChip(b.status)}${b.missing_buy_price ? '<span class="chip warn">нет цен ¥</span>' : ''}<span class="spacer"></span><span class="num">${rubS(b.profit_rub)}</span></div>
+          <div class="small muted" style="margin-top:4px">Продано ${b.units_sold} из ${b.units_total} · вложено ${rub(b.total_cost_rub)} · получено ${rub(b.revenue_rub)}
+          ${b.payback_rub < 0 ? (b.breakeven_units != null ? ` · отбить: ещё ${b.breakeven_units} шт` : ' · не отбивается по текущим ценам') : ' · <span class="pos">отбита</span>'}</div>
+          <div class="progress"><div style="width:${pct}%"></div></div></a>`;
+      }).join('') : '<div class="card empty"><b>Партий пока нет</b><a href="#batches">Создать первую</a></div>'}
+    </div>
+
+    ${d.stale.length ? `<div class="section"><h3>Залежались (больше ${s.stale_days} дн.)</h3><div class="card">
+      ${d.stale.map((i) => `<a class="row list-link" style="padding:4px 0" href="#batch-${i.batch_id}"><span>${esc(itemName(i))}</span><span class="spacer"></span><span class="chip warn">${i.stock} шт · ${i.days} дн.</span></a>`).join('')}
+      <div class="small muted" style="margin-top:6px">Можно снизить цену или поднять объявление.</div></div></div>` : ''}
+
+    ${d.top.length ? `<div class="section"><h3>Самые прибыльные</h3><div class="card">
+      ${d.top.map((i, n) => `<div class="row" style="padding:4px 0"><span class="muted num">${n + 1}.</span><span>${esc(itemName(i))}</span><span class="spacer"></span><span class="small muted">${i.sold} шт</span><b class="num">${rubS(i.profit)}</b></div>`).join('')}
+    </div></div>` : ''}`;
+}
+
+function chart(weeks) {
+  const max = Math.max(1, ...weeks.map((w) => Math.max(w.revenue, w.profit)));
+  const h = (v) => `${Math.max(0, (v / max) * 100)}%`;
+  const cols = weeks.map((w) => {
+    const label = new Date(w.week).toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit' });
+    return `<div class="col" title="Неделя с ${label}: выручка ${rub(w.revenue)}, прибыль ${rub(w.profit)}, ${w.units} шт">
+      <div class="bars"><i style="height:${h(w.revenue)}"></i><i class="profit" style="height:${h(w.profit)}"></i></div>
+      <span>${label}</span></div>`;
+  }).join('');
+  const empty = weeks.every((w) => !w.revenue);
+  return `<div class="chart" role="img" aria-label="Выручка и прибыль по неделям">${cols}</div>
+    <div class="legend"><span><i style="background:var(--ink)"></i>Выручка</span><span><i style="background:var(--tape)"></i>Прибыль</span>${empty ? '<span>· продаж пока нет</span>' : ''}</div>`;
+}
+
+const statusChip = (s) => (s === 'received' ? '<span class="chip ok">получена</span>' : '<span class="chip accent">в пути</span>');
+
+/* ───────────── партии ───────────── */
+async function viewBatches() {
+  const list = await api('batches');
+  view.innerHTML = `
+    <div class="page-head"><h1>Партии</h1><button class="primary" id="new-batch">+ Новая партия</button></div>
+    ${list.length ? list.map((b) => `
+      <a class="card list-link" href="#batch-${b.id}">
+        <div class="row"><b>${esc(b.name)}</b>${statusChip(b.status)}${b.missing_buy_price ? `<span class="chip warn">нет цен ¥ у ${b.missing_buy_price}</span>` : ''}<span class="spacer"></span><span class="small muted">${fmtDate(b.created_at)}</span></div>
+        <div class="calc two small" style="margin-top:10px">
+          <span class="k">Вещей</span><span class="v">${b.calc.units_total} шт · ${kg(b.calc.total_weight_kg)}</span>
+          <span class="k">Вложено</span><span class="v">${rub(b.calc.total_cost_rub)}</span>
+          <span class="k">Прибыль план</span><span class="v">${rubS(b.calc.planned_profit_rub)}</span>
+          <span class="k">Прибыль факт</span><span class="v">${rubS(b.calc.profit_rub)}</span>
+        </div></a>`).join('') : '<div class="card empty"><b>Партий пока нет</b>Создай партию, когда закажешь товар из Китая</div>'}`;
+  $('#new-batch').onclick = () => batchForm();
+}
+
+async function batchForm(b) {
+  const s = await api('settings');
+  const v = b || { name: '', status: 'transit', note: '', cny_cbr: s.cny_cbr, cny_markup: s.cny_markup, usd_rate: s.usd_rate, cargo_usd_per_kg: s.cargo_usd_per_kg, rf_delivery_rub: s.rf_delivery_rub };
+  openSheet(b ? 'Партия' : 'Новая партия', `
+    <form id="bf">
+      <label class="f"><span>Название</span><input name="name" value="${esc(v.name)}" placeholder="Например: Партия №2" autofocus></label>
+      <label class="f"><span>Статус</span><select name="status"><option value="transit" ${v.status === 'transit' ? 'selected' : ''}>В пути</option><option value="received" ${v.status === 'received' ? 'selected' : ''}>Получена</option></select></label>
+      <div class="f-row">
+        <label class="f"><span>Юань ЦБ, ₽</span><input name="cny_cbr" type="number" step="0.0001" min="0" value="${v.cny_cbr}"></label>
+        <label class="f"><span>Наценка к юаню, ₽</span><input name="cny_markup" type="number" step="0.01" value="${v.cny_markup}"></label>
+      </div>
+      <div class="f-row three">
+        <label class="f"><span>Доллар карго, ₽</span><input name="usd_rate" type="number" step="0.01" min="0" value="${v.usd_rate}"></label>
+        <label class="f"><span>Карго, $/кг</span><input name="cargo_usd_per_kg" type="number" step="0.01" min="0" value="${v.cargo_usd_per_kg}"></label>
+        <label class="f"><span>Доставка РФ, ₽</span><input name="rf_delivery_rub" type="number" step="1" min="0" value="${v.rf_delivery_rub}"></label>
+      </div>
+      <p class="hint-line">Курсы запоминаются в партии и не меняются сами, чтобы старые расчёты не «плыли».${b && b.cny_cbr !== s.cny_cbr ? ` <a href="#" id="use-rate">Подставить сегодняшний курс ЦБ (${nf2.format(s.cny_cbr)})</a>` : ''}</p>
+      <label class="f"><span>Заметка</span><textarea name="note" rows="2" placeholder="Трек-номер, у кого заказывал…">${esc(v.note)}</textarea></label>
+      <button class="primary block">${b ? 'Сохранить' : 'Создать партию'}</button>
+      ${b ? '<button type="button" class="danger block" id="del-batch" style="margin-top:8px">Удалить партию</button>' : ''}
+    </form>`, (el) => {
+    $('#bf', el).onsubmit = guard(async (e) => {
+      e.preventDefault();
+      const data = formData(e.target);
+      const r = b ? await api('saveBatch', b.id, data) : await api('createBatch', data);
+      closeSheet();
+      if (b) rerender(); else location.hash = `#batch-${r.id}`;
+    });
+    $('#use-rate', el)?.addEventListener('click', (e) => { e.preventDefault(); $('[name=cny_cbr]', el).value = s.cny_cbr; e.target.remove(); });
+    if (b) $('#del-batch', el).onclick = guard(async () => {
+      if (!(await ask(`Удалить «${b.name}» вместе со всеми товарами, фото и продажами?`))) return batchForm(b);
+      await api('delBatch', b.id);
+      closeSheet(); location.hash = '#batches';
+    });
+  });
+}
+
+async function viewBatch(id) {
+  const b = await api('batch', id);
+  const c = b.calc;
+  view.innerHTML = `
+    <a class="back" href="#batches">‹ Партии</a>
+    <div class="page-head"><div class="row"><h1>${esc(b.name)}</h1>${statusChip(b.status)}</div>
+      <div class="row">${b.status === 'transit' ? '<button class="sm" id="recv">Пришла</button>' : ''}<button class="sm" id="edit-batch">Курсы и настройки</button></div></div>
+    ${b.note ? `<p class="muted" style="margin-top:-8px">${esc(b.note)}</p>` : ''}
+    ${b.missing_buy_price ? `<div class="alert" style="margin-bottom:12px">Вбей цену выкупа в юанях у ${b.missing_buy_price} ${plural(b.missing_buy_price, 'позиции', 'позиций', 'позиций')} — поле подсвечено ниже.</div>` : ''}
+
+    <div class="card">
+      <div class="calc two">
+        <span class="k">Общий вес</span><span class="v">${kg(c.total_weight_kg)}</span>
+        <span class="k">Карго (${nf2.format(b.cargo_usd_per_kg)} $/кг × ${nf2.format(b.usd_rate)} ₽)</span><span class="v">${rub(c.cargo_rub)}</span>
+        <span class="k">Доставка по РФ</span><span class="v">${rub(c.rf_delivery_rub)}</span>
+        <span class="k">Логистика на 1 кг</span><span class="v">${rub(c.logistics_per_kg_rub)}</span>
+        <span class="k">Выкуп (¥ по ${nf2.format(b.cny_rate)} ₽)</span><span class="v">${rub(c.buy_rub)}</span>
+        <span class="k">Прочие расходы</span><span class="v">${rub(c.expenses_rub)}</span>
+        <span class="sep"></span>
+        <span class="k strong">Всего вложено</span><span class="v strong">${rub(c.total_cost_rub)}</span>
+        <span class="k strong">Выручка, если продать всё</span><span class="v strong">${rub(c.planned_revenue_rub)}</span>
+        <span class="k strong">Прибыль план</span><span class="v strong">${rubS(c.planned_profit_rub)}</span>
+        <span class="k">ROI план</span><span class="v">${nf0.format(c.roi_pct)}%</span>
+        <span class="sep"></span>
+        <span class="k">Продано</span><span class="v">${c.units_sold} из ${c.units_total} шт</span>
+        <span class="k">Получено</span><span class="v">${rub(c.revenue_rub)}</span>
+        <span class="k strong">Прибыль факт</span><span class="v strong">${rubS(c.profit_rub)}</span>
+        <span class="k">${c.payback_rub >= 0 ? 'Партия отбита' : 'Чтобы отбить партию'}</span><span class="v">${c.payback_rub >= 0 ? `<span class="pos">в плюсе на ${rub(c.payback_rub)}</span>` : c.breakeven_units != null ? `ещё ${c.breakeven_units} шт` : '<span class="neg">не хватит товара</span>'}</span>
+      </div>
+    </div>
+
+    <div class="section"><div class="row" style="margin-bottom:8px"><h3 style="margin:0">Товары</h3><span class="spacer"></span><button class="primary sm" id="add-item">+ Товар</button></div>
+      ${b.items.length ? b.items.map(itemCard).join('') : '<div class="card empty"><b>Пока пусто</b>Добавь вещи из этой посылки</div>'}
+    </div>
+
+    <div class="section"><div class="row" style="margin-bottom:8px"><h3 style="margin:0">Прочие расходы партии</h3><span class="spacer"></span><button class="sm" id="add-exp">+ Расход</button></div>
+      <div class="card">${b.expenses.length ? b.expenses.map((e) => `<div class="row" style="padding:3px 0"><span>${esc(e.title)}</span><span class="small muted">${fmtDate(e.spent_at)}</span><span class="spacer"></span><b class="num">${rub(e.amount)}</b><button class="icon-btn" data-del-exp="${e.id}" aria-label="Удалить">✕</button></div>`).join('')
+        : '<span class="muted small">Упаковка, продвижение на Авито, комиссия посредника — всё, что не карго и не доставка.</span>'}</div>
+    </div>`;
+
+  $('#edit-batch').onclick = () => batchForm(b);
+  $('#recv')?.addEventListener('click', guard(async () => { await api('saveBatch', id, { status: 'received' }); toast('Партия на складе'); rerender(); }));
+  $('#add-item').onclick = () => itemForm(b);
+  $('#add-exp').onclick = () => expenseForm(b.id);
+  $$('[data-del-exp]').forEach((x) => (x.onclick = guard(async () => { await api('delExpense', x.dataset.delExp); rerender(); })));
+  bindItemCards(b);
+}
+
+function itemCard(i) {
+  const c = i.calc;
+  const ph = i.photos[0];
+  return `<div class="card item" data-item="${i.id}">
+    <button class="thumb" data-photos="${i.id}" aria-label="Фото">${ph ? `<img src="${ph.url}" alt="" loading="lazy">` : 'нет<br>фото'}</button>
+    <div>
+      <div class="row"><span class="item-title">${esc(itemName(i))}</span>${i.photos.length > 1 ? `<span class="chip">${i.photos.length} фото</span>` : ''}</div>
+      <div class="chips" style="margin-top:4px">
+        <span class="chip">${esc(i.category || 'без типа')} · ${kg(i.weight_kg)}</span>
+        <span class="chip ${c.stock ? 'ok' : ''}">в наличии ${c.stock} из ${i.qty}</span>
+        ${c.in_orders ? `<span class="chip accent">в заказах ${c.in_orders}</span>` : ''}
+        ${c.sold ? `<span class="chip">продано ${c.sold}</span>` : ''}
+        ${c.written_off ? `<span class="chip bad">списано ${c.written_off}</span>` : ''}
+      </div>
+      <label class="yuan ${i.buy_cny > 0 ? '' : 'missing'}"><span class="small muted">Выкуп за 1 шт, ¥</span>
+        <input type="number" inputmode="decimal" step="0.01" min="0" value="${i.buy_cny || ''}" placeholder="0" data-yuan="${i.id}"></label>
+      <div class="item-meta">
+        <div><span>Выкуп </span>${rub(c.unit_buy_rub)}</div>
+        <div><span>Логистика </span>${rub(c.unit_logistics_rub)}</div>
+        <div><span>Себестоимость </span><b>${rub(c.unit_cost_rub)}</b></div>
+        <div><span>Продажа </span><b>${rub(i.sell_price)}</b></div>
+        <div><span>С 1 шт </span>${rubS(c.unit_margin_rub)} <span>(${nf0.format(c.margin_pct)}%)</span></div>
+        ${c.sold ? `<div><span>Заработано </span>${rubS(c.profit_rub)}</div>` : ''}
+      </div>
+      <div class="item-actions">
+        <button class="sm primary" data-sell="${i.id}" ${c.stock ? '' : 'disabled'}>Новый заказ</button>
+        <button class="sm" data-photos="${i.id}">Фото</button>
+        <button class="sm" data-edit="${i.id}">Изменить</button>
+      </div>
+    </div></div>`;
+}
+
+function bindItemCards(b) {
+  const byId = Object.fromEntries(b.items.map((i) => [i.id, i]));
+  $$('[data-yuan]').forEach((inp) => {
+    inp.onchange = guard(async () => {
+      await api('saveItem', inp.dataset.yuan, { buy_cny: Number(inp.value || 0) });
+      toast('Цена выкупа сохранена'); rerender();
+    });
+    inp.onkeydown = (e) => { if (e.key === 'Enter') inp.blur(); };
+  });
+  $$('[data-sell]').forEach((x) => (x.onclick = () => orderForm(byId[x.dataset.sell])));
+  $$('[data-photos]').forEach((x) => (x.onclick = () => photosSheet(byId[x.dataset.photos])));
+  $$('[data-edit]').forEach((x) => (x.onclick = () => itemForm(b, byId[x.dataset.edit])));
+}
+
+async function itemForm(b, it) {
+  const cats = await api('categories');
+  const v = it || { category_id: cats.find((c) => c.name.startsWith('Худи'))?.id ?? cats[0]?.id, title: '', color: '', size: '', qty: 1, buy_cny: '', sell_price: '', note: '' };
+  const catOpts = cats.map((c) => `<option value="${c.id}" data-w="${c.weight_kg}" data-p="${c.default_price}" ${c.id === v.category_id ? 'selected' : ''}>${esc(c.name)} — ${nf2.format(c.weight_kg)} кг</option>`).join('');
+  openSheet(it ? 'Товар' : 'Новый товар', `
+    <form id="itf">
+      <label class="f"><span>Тип вещи (по нему ставится вес)</span><select name="category_id">${catOpts}</select></label>
+      <label class="f"><span>Название / модель</span><input name="title" required value="${esc(v.title)}" placeholder="Chrome Hearts Matty Boy" autofocus></label>
+      <div class="f-row">
+        <label class="f"><span>Цвет</span><input name="color" value="${esc(v.color)}" placeholder="серый"></label>
+        <label class="f"><span>Размер</span><input name="size" value="${esc(v.size)}" placeholder="L"></label>
+      </div>
+      <div class="f-row three">
+        <label class="f"><span>Кол-во, шт</span><input name="qty" type="number" min="1" step="1" required value="${v.qty}"></label>
+        <label class="f"><span>Выкуп 1 шт, ¥</span><input name="buy_cny" type="number" inputmode="decimal" min="0" step="0.01" value="${v.buy_cny || ''}" placeholder="0"></label>
+        <label class="f"><span>Продажа, ₽</span><input name="sell_price" type="number" min="0" step="1" value="${v.sell_price}"></label>
+      </div>
+      ${it ? `<div class="f-row">
+        <label class="f"><span>Вес 1 шт, кг</span><input name="weight_kg" type="number" min="0.01" step="0.01" value="${it.weight_kg}"></label>
+        <span></span></div>` : ''}
+      <p class="hint-line" id="w-hint"></p>
+      <label class="check"><input type="checkbox" name="listed" ${it?.listed ? 'checked' : ''}> Выставлено на Авито</label>
+      <label class="f"><span>Заметка</span><input name="note" value="${esc(v.note)}"></label>
+      <button class="primary block">${it ? 'Сохранить' : 'Добавить'}</button>
+      ${it ? '<button type="button" class="danger block" id="del-item" style="margin-top:8px">Удалить товар</button>' : ''}
+    </form>`, (el) => {
+    const sel = $('[name=category_id]', el), price = $('[name=sell_price]', el), hint = $('#w-hint', el);
+    const upd = (setPrice) => {
+      const o = sel.selectedOptions[0];
+      if (!o) return;
+      hint.textContent = it ? 'Если сменишь тип — вес поставится от нового типа.' : `Вес поставится автоматически: ${nf2.format(o.dataset.w)} кг за штуку.`;
+      if (setPrice && (!price.value || !it)) price.value = o.dataset.p;
+    };
+    upd(!it);
+    sel.onchange = () => {
+      upd(true);
+      const w = $('[name=weight_kg]', el); if (w) w.value = sel.selectedOptions[0].dataset.w;
+    };
+    $('#itf', el).onsubmit = guard(async (e) => {
+      e.preventDefault();
+      const d = formData(e.target);
+      d.category_id = d.category_id || null;
+      d.buy_cny = d.buy_cny ?? 0;
+      if (it) await api('saveItem', it.id, d);
+      else await api('createItem', b.id, d);
+      closeSheet(); toast(it ? 'Сохранено' : 'Товар добавлен'); rerender();
+    });
+    if (it) $('#del-item', el).onclick = guard(async () => {
+      if (!(await ask(`Удалить «${itemName(it)}» вместе с фото и продажами?`))) return itemForm(b, it);
+      await api('delItem', it.id); closeSheet(); rerender();
+    });
+  });
+}
+
+function photosSheet(i) {
+  const draw = (photos) => `
+    <p class="small muted" style="margin-top:0">${esc(itemName(i))}</p>
+    <div class="photos">
+      ${photos.map((p) => `<div class="ph"><img src="${p.url}" alt="" data-full="${p.url}"><button data-del-photo="${p.id}" aria-label="Удалить фото">✕</button></div>`).join('')}
+      ${ASSETS ? '<label class="add"><b>+</b>Добавить<input type="file" accept="image/*" multiple hidden id="ph-input"></label>' : ''}
+    </div>
+    <p class="hint-line" style="margin-top:12px">${ASSETS ? 'С телефона можно сразу снять на камеру. Фото сжимаются автоматически.' : 'Добавлять фото может только владелец страницы.'}</p>`;
+  const mount = (el) => {
+    if ($('#ph-input', el)) $('#ph-input', el).onchange = guard(async (e) => {
+      const files = [...e.target.files]; if (!files.length) return;
+      toast(`Загружаю ${files.length} фото…`);
+      i.photos = await api('uploadPhotos', i.id, files);
+      $('#sheet-body').innerHTML = draw(i.photos); mount($('#sheet-body')); toast('Фото добавлены'); rerender();
+    });
+    $$('[data-full]', el).forEach((img) => (img.onclick = () => showPhoto(img.dataset.full)));
+    $$('[data-del-photo]', el).forEach((x) => (x.onclick = guard(async () => {
+      const ok = await ask('Удалить это фото?');
+      if (ok) { await api('delPhoto', x.dataset.delPhoto); i.photos = i.photos.filter((p) => String(p.id) !== x.dataset.delPhoto); rerender(); }
+      photosSheet(i);
+    })));
+  };
+  openSheet('Фото', draw(i.photos), mount);
+}
+
+async function expenseForm(batchId) {
+  const batches = batchId ? [] : await api('batches');
+  openSheet('Расход', `
+    <form id="ef">
+      <label class="f"><span>На что</span><input name="title" required placeholder="Продвижение на Авито" autofocus></label>
+      <label class="f"><span>Сумма, ₽</span><input name="amount" type="number" min="1" step="1" required></label>
+      ${batchId ? '' : `<label class="f"><span>Партия</span><select name="batch_id"><option value="">Общий расход (не к партии)</option>${batches.map((b) => `<option value="${b.id}">${esc(b.name)}</option>`).join('')}</select></label>`}
+      <button class="primary block">Добавить</button>
+    </form>`, (el) => {
+    $('#ef', el).onsubmit = guard(async (e) => {
+      e.preventDefault();
+      const d = formData(e.target);
+      d.batch_id = batchId || d.batch_id || null;
+      await api('addExpense', d);
+      closeSheet(); toast('Расход добавлен'); rerender();
+    });
+  });
+}
+
+/* ───────────── склад ───────────── */
+let stockFilter = 'in';
+let stockQuery = '';
+async function viewStock() {
+  const all = await api('stock');
+  const draw = () => {
+    const q = stockQuery.trim().toLowerCase();
+    const list = all.filter((i) => (stockFilter === 'all' || (stockFilter === 'in' ? i.calc.stock > 0 : i.stale))
+      && (!q || itemName(i).toLowerCase().includes(q)));
+    const units = list.reduce((s, i) => s + i.calc.stock, 0);
+    const inOrders = list.reduce((s, i) => s + i.calc.in_orders, 0);
+    const value = list.reduce((s, i) => s + i.calc.stock * i.sell_price, 0);
+    $('#stock-list').innerHTML = list.length ? `<div class="stock-grid">${list.map((i) => `
+      <div class="card tile ${i.calc.stock ? '' : 'soldout'}" data-open="${i.id}" role="button" tabindex="0">
+        <div class="ph">${i.photos[0] ? `<img src="${i.photos[0].url}" alt="" loading="lazy">` : 'нет фото'}</div>
+        <div class="body"><div class="t">${esc(itemName(i))}</div>
+          <div class="p num">${rub(i.sell_price)}</div>
+          <div class="chips" style="margin-top:6px"><span class="chip ${i.calc.stock ? 'ok' : ''}">${i.calc.stock ? `${i.calc.stock} шт` : 'нет'}</span>
+            ${i.calc.in_orders ? `<span class="chip accent">в заказах ${i.calc.in_orders}</span>` : ''}${i.batch_status === 'transit' ? '<span class="chip">в пути</span>' : ''}
+            ${i.stale ? `<span class="chip warn">${i.days_in_stock} дн.</span>` : ''}${i.listed ? '<span class="chip">на Авито</span>' : ''}</div>
+          ${i.calc.stock ? `<button class="sm primary block tile-sell" data-qsell="${i.id}">Новый заказ</button>` : ''}</div>
+      </div>`).join('')}</div>` : '<div class="card empty"><b>Ничего не нашлось</b>Попробуй другой фильтр</div>';
+    $('#stock-count').innerHTML = `<b class="num">${units}</b> шт свободно · <b class="num">${inOrders}</b> в заказах · на <b class="num">${rub(value)}</b>`;
+    $$('[data-open]').forEach((x) => {
+      const open = () => stockItemSheet(all.find((i) => String(i.id) === x.dataset.open));
+      x.onclick = (e) => { if (!e.target.closest('[data-qsell]')) open(); };
+      x.onkeydown = (e) => { if (e.key === 'Enter' && e.target === x) open(); };
+    });
+    $$('[data-qsell]').forEach((x) => (x.onclick = () => orderForm(all.find((i) => String(i.id) === x.dataset.qsell))));
+  };
+  view.innerHTML = `
+    <div class="page-head"><h1>Склад</h1><span class="small muted stock-count" id="stock-count"></span></div>
+    <div class="row" style="margin-bottom:14px">
+      <div class="seg" id="seg">${[['in', 'В наличии'], ['stale', 'Залежались'], ['all', 'Все']].map(([k, t]) => `<button data-f="${k}" class="${stockFilter === k ? 'on' : ''}">${t}</button>`).join('')}</div>
+      <input class="search" type="search" placeholder="Поиск…" value="${esc(stockQuery)}" id="q">
+    </div>
+    <div id="stock-list"></div>`;
+  $$('#seg button').forEach((x) => (x.onclick = () => { stockFilter = x.dataset.f; $$('#seg button').forEach((y) => y.classList.toggle('on', y === x)); draw(); }));
+  $('#q').oninput = (e) => { stockQuery = e.target.value; draw(); };
+  draw();
+}
+
+function stockItemSheet(i) {
+  const c = i.calc;
+  openSheet(itemName(i), `
+    ${i.photos.length ? `<div class="photos" style="margin-bottom:14px">${i.photos.map((p) => `<div class="ph"><img src="${p.url}" alt="" data-full="${p.url}"></div>`).join('')}</div>` : ''}
+    <div class="calc">
+      <span class="k">Партия</span><span class="v"><a href="#batch-${i.batch_id}">${esc(i.batch_name)}</a></span>
+      <span class="k">В наличии</span><span class="v">${c.stock} из ${i.qty} шт</span>
+      <span class="k">В заказах</span><span class="v">${c.in_orders} шт</span>
+      <span class="k">Продано</span><span class="v">${c.sold} шт</span>
+      <span class="k">Себестоимость</span><span class="v">${rub(c.unit_cost_rub)}</span>
+      <span class="k">Цена продажи</span><span class="v">${rub(i.sell_price)}</span>
+      <span class="k">Прибыль с 1 шт</span><span class="v">${rubS(c.unit_margin_rub)}</span>
+    </div>
+    <div class="row" style="margin-top:16px">
+      <button class="primary" id="s-sell" ${c.stock ? '' : 'disabled'}>Новый заказ</button>
+      <button id="s-photos">Фото</button>
+    </div>
+    <label class="check" style="margin-top:14px"><input type="checkbox" id="s-listed" ${i.listed ? 'checked' : ''}> Выставлено на Авито</label>`, (el) => {
+    $$('[data-full]', el).forEach((img) => (img.onclick = () => showPhoto(img.dataset.full)));
+    $('#s-sell', el).onclick = () => orderForm(i);
+    $('#s-photos', el).onclick = () => photosSheet(i);
+    $('#s-listed', el).onchange = guard(async (e) => { await api('saveItem', i.id, { listed: e.target.checked }); rerender(); });
+  });
+}
+
+/* ───────────── настройки ───────────── */
+async function viewSettings() {
+  const [s, cats] = await Promise.all([api('settings'), api('categories')]);
+  view.innerHTML = `
+    <div class="page-head"><h1>Настройки</h1></div>
+    <h3>Курсы и доставка</h3>
+    <form class="card" id="setf">
+      <div class="f-row">
+        <label class="f"><span>Юань ЦБ, ₽</span><input name="cny_cbr" type="number" step="0.0001" min="0" value="${s.cny_cbr}"></label>
+        <label class="f"><span>Наценка к юаню, ₽</span><input name="cny_markup" type="number" step="0.01" value="${s.cny_markup}"></label>
+      </div>
+      <p class="hint-line">Курс для выкупа: <b>${nf2.format(s.cny_rate)} ₽</b> за 1 ¥ · ${s.cny_cbr_date ? `обновлён ${esc(s.cny_cbr_date)}` : 'ещё не обновлялся'}</p>
+      <div class="f-row">
+        <label class="f"><span>Доллар у карго, ₽</span><input name="usd_rate" type="number" step="0.01" min="0" value="${s.usd_rate}"></label>
+        <label class="f"><span>Карго, $ за кг</span><input name="cargo_usd_per_kg" type="number" step="0.01" min="0" value="${s.cargo_usd_per_kg}"></label>
+      </div>
+      <div class="f-row">
+        <label class="f"><span>Доставка по РФ на посылку, ₽</span><input name="rf_delivery_rub" type="number" step="1" min="0" value="${s.rf_delivery_rub}"></label>
+        <label class="f"><span>Залежался через, дней</span><input name="stale_days" type="number" step="1" min="1" value="${s.stale_days}"></label>
+      </div>
+      <p class="hint-line">Курс ЦБ обновляется сам каждый день. Можно поправить вручную. Новые значения применяются к новым партиям. У существующей партии курсы меняются в её «Курсах и настройках».</p>
+      <button class="primary">Сохранить</button>
+    </form>
+
+    <div class="section"><div class="row" style="margin-bottom:8px"><h3 style="margin:0">Типы вещей и вес</h3><span class="spacer"></span><button class="sm" id="add-cat">+ Тип</button></div>
+      <div class="card" style="padding:4px 8px; overflow-x:auto"><table class="t">
+        <thead><tr><th>Тип</th><th>Вес 1 шт, кг</th><th>Цена по умолч., ₽</th><th></th></tr></thead>
+        <tbody>${cats.length ? '' : '<tr><td colspan="4" class="muted">Типов пока нет. <button class="sm" id="add-default-cats">Добавить стандартные</button></td></tr>'}${cats.map((c) => `<tr data-cat="${c.id}">
+          <td><input name="name" value="${esc(c.name)}"></td>
+          <td style="width:110px"><input name="weight_kg" type="number" step="0.05" min="0.01" value="${c.weight_kg}"></td>
+          <td style="width:130px"><input name="default_price" type="number" step="100" min="0" value="${c.default_price}"></td>
+          <td style="width:40px"><button class="icon-btn" data-del-cat="${c.id}" aria-label="Удалить">✕</button></td></tr>`).join('')}</tbody>
+      </table></div>
+      <p class="hint-line" style="margin-top:8px">Меняется сразу при выходе из поля. Вес у уже добавленных товаров не меняется — его можно поправить в самом товаре.</p>
+    </div>
+
+    ${accountSection()}`;
+
+  $('#setf').onsubmit = guard(async (e) => {
+    e.preventDefault();
+    const d = formData(e.target);
+    if (d.cny_cbr === s.cny_cbr) delete d.cny_cbr;
+    await api('saveSettings', d);
+    toast('Сохранено'); rerender();
+  });
+  $$('[data-cat]').forEach((tr) => {
+    tr.onchange = guard(async () => {
+      const body = { name: $('[name=name]', tr).value, weight_kg: Number($('[name=weight_kg]', tr).value), default_price: Number($('[name=default_price]', tr).value || 0) };
+      await api('saveCategory', tr.dataset.cat, body); toast('Сохранено');
+    });
+  });
+  $$('[data-del-cat]').forEach((x) => (x.onclick = guard(async () => { if (!(await ask('Удалить этот тип вещи? Товары останутся.'))) return; await api('delCategory', x.dataset.delCat); rerender(); })));
+  $('#add-cat').onclick = guard(async () => { await api('addCategory', { name: 'Новый тип', weight_kg: 0.5, default_price: 0 }); rerender(); });
+  bindAccountSection();
+  $('#add-default-cats')?.addEventListener('click', guard(async () => { await api('addDefaultCategories'); toast('Типы добавлены'); rerender(); }));
+}
+
+
+'use strict';
+/* Заказы: новый заказ, переходы статусов, раздел «Заказы». */
+
+const STATUS_CHIP = {
+  ordered: '<span class="chip accent">заказан</span>',
+  shipped: '<span class="chip warn">отправлен</span>',
+  sold: '<span class="chip ok">продан</span>',
+  cancelled: '<span class="chip">отменён</span>',
+  returned: '<span class="chip bad">возврат</span>',
+};
+
+function orderForm(i) {
+  const c = i.calc;
+  const today = todayIso();
+  openSheet('Новый заказ', `
+    <p style="margin-top:0"><b>${esc(itemName(i))}</b><br><span class="small muted">Свободно ${c.stock} шт · себестоимость ${rub(c.unit_cost_rub)}</span></p>
+    <form id="of">
+      <div class="f-row">
+        <label class="f"><span>Сколько, шт</span><input name="qty" type="number" min="1" max="${c.stock}" step="1" value="1" required></label>
+        <label class="f"><span>Цена за 1 шт, ₽</span><input name="price" type="number" min="0" step="1" value="${i.sell_price}" required></label>
+      </div>
+      <div class="f-row">
+        <label class="f"><span>Доставка за твой счёт, ₽</span><input name="extra_cost" type="number" min="0" step="1" value="0"></label>
+        <label class="f"><span>Дата</span><input name="date" type="date" value="${today}"></label>
+      </div>
+      <label class="f"><span>Покупатель или заметка</span><input name="buyer" placeholder="Например: Иван, Авито"></label>
+      <label class="check"><input type="checkbox" name="sold_now"> Сразу продано (встреча, деньги получены)</label>
+      <p id="of-profit" class="num" style="font-weight:600"></p>
+      <button class="primary block" id="of-go">Оформить заказ</button>
+    </form>`, (el) => {
+    const f = $('#of', el);
+    const upd = () => {
+      const d = formData(f);
+      $('#of-profit', el).innerHTML = `Прибыль, когда продашь: ${rubS((d.price || 0) * (d.qty || 0) - (d.extra_cost || 0) - c.unit_cost_rub * (d.qty || 0))}`;
+      $('#of-go', el).textContent = d.sold_now ? 'Записать продажу' : 'Оформить заказ';
+    };
+    f.oninput = upd; upd();
+    f.onsubmit = guard(async (e) => {
+      e.preventDefault();
+      const d = formData(f);
+      const r = await api('createOrder', i.id, {
+        qty: d.qty, price: d.price, extra_cost: d.extra_cost, buyer: d.buyer,
+        status: d.sold_now ? 'sold' : 'ordered', date: d.date === today ? null : `${d.date} 12:00:00`,
+      });
+      closeSheet();
+      toast(d.sold_now ? 'Продажа записана' : 'Заказ оформлен — он в разделе «Заказы»', {
+        label: 'Отменить', run: async () => { await api('delOrder', r.id); toast('Отменено'); rerender(); },
+      });
+      rerender();
+    });
+  });
+}
+
+async function changeStatus(o, status, extra) {
+  const prev = { ...S.orders.get(o.id) };
+  await api('setOrderStatus', o.id, status, extra);
+  const msg = { shipped: 'Отмечено: отправлен', sold: `Продано за ${rub(o.price * o.qty)}`, cancelled: 'Заказ отменён, вещь вернулась на склад',
+    returned: extra?.return_action === 'restock' ? 'Возврат: вещь снова на складе' : 'Возврат: вещь списана' }[status];
+  toast(msg, { label: 'Отменить', run: async () => { await api('undoOrderStatus', o.id, prev); toast('Вернул как было'); rerender(); } });
+  rerender();
+}
+
+function shipForm(o) {
+  openSheet('Отправлен', `
+    <p style="margin-top:0"><b>${esc(itemName(o))}</b></p>
+    <form id="sf">
+      <label class="f"><span>Трек-номер (необязательно)</span><input name="track" value="${esc(o.track || '')}" placeholder="Например: 80085012345678" autofocus></label>
+      <button class="primary block">Отметить отправленным</button>
+    </form>`, (el) => {
+    $('#sf', el).onsubmit = guard(async (e) => { e.preventDefault(); closeSheet(); await changeStatus(o, 'shipped', { track: formData(e.target).track }); });
+  });
+}
+
+function returnForm(o) {
+  openSheet('Возврат от покупателя', `
+    <p style="margin-top:0"><b>${esc(itemName(o))}</b> · ${o.qty} шт</p>
+    <p class="hint-line">Деньги за этот заказ уберутся из выручки. Доставка ${o.extra_cost ? `(${rub(o.extra_cost)})` : ''} останется в расходах.</p>
+    <div class="ret-choice">
+      <button class="primary" id="r-restock"><b>Вернуть на склад</b><span>Вещь в порядке, продам снова</span></button>
+      <button id="r-writeoff"><b>Списать</b><span>Брак, потеря или испорчена — себестоимость уйдёт в убыток</span></button>
+    </div>`, (el) => {
+    $('#r-restock', el).onclick = guard(async () => { closeSheet(); await changeStatus(o, 'returned', { return_action: 'restock' }); });
+    $('#r-writeoff', el).onclick = guard(async () => { closeSheet(); await changeStatus(o, 'returned', { return_action: 'writeoff' }); });
+  });
+}
+
+function orderSheet(o) {
+  const can = { ordered: ['shipped', 'sold', 'cancelled'], shipped: ['sold', 'returned', 'cancelled'], sold: ['returned'] }[o.status] || [];
+  const ts = (k, label) => (o[k] ? `<span class="k">${label}</span><span class="v">${fmtDate(o[k])}</span>` : '');
+  openSheet('Заказ', `
+    <div class="row" style="margin-bottom:10px"><b>${esc(itemName(o))}</b>${STATUS_CHIP[o.status]}</div>
+    <div class="calc">
+      <span class="k">Количество</span><span class="v">${o.qty} шт × ${rub(o.price)}</span>
+      <span class="k">Сумма</span><span class="v">${rub(o.price * o.qty)}</span>
+      ${o.extra_cost ? `<span class="k">Доставка за твой счёт</span><span class="v">${rub(o.extra_cost)}</span>` : ''}
+      ${o.profit_rub != null ? `<span class="k">Прибыль</span><span class="v">${rubS(o.profit_rub)}</span>` : ''}
+      ${ts('created_at', 'Оформлен')}${ts('shipped_at', 'Отправлен')}${ts('sold_at', 'Продан')}
+      ${o.status === 'returned' ? `<span class="k">Возврат</span><span class="v">${o.return_action === 'writeoff' ? 'списан' : 'на склад'}</span>` : ''}
+      <span class="k">Партия</span><span class="v"><a href="#batch-${o.batch_id}">${esc(o.batch_name || '—')}</a></span>
+    </div>
+    <form id="oe" style="margin-top:14px">
+      <div class="f-row">
+        <label class="f"><span>Трек-номер</span><input name="track" value="${esc(o.track || '')}"></label>
+        <label class="f"><span>Покупатель / заметка</span><input name="buyer" value="${esc(o.buyer || '')}"></label>
+      </div>
+      <div class="f-row">
+        <label class="f"><span>Цена за 1 шт, ₽</span><input name="price" type="number" min="0" step="1" value="${o.price}"></label>
+        <label class="f"><span>Доставка за твой счёт, ₽</span><input name="extra_cost" type="number" min="0" step="1" value="${o.extra_cost || 0}"></label>
+      </div>
+      <button class="sm">Сохранить изменения</button>
+    </form>
+    ${can.length ? `<div class="row" style="margin-top:16px">
+      ${can.includes('shipped') ? '<button class="primary" data-st="shipped">Отправил</button>' : ''}
+      ${can.includes('sold') ? `<button class="${o.status === 'shipped' ? 'primary' : ''}" data-st="sold">Продано</button>` : ''}
+      ${can.includes('returned') ? '<button data-st="returned">Возврат</button>' : ''}
+      ${can.includes('cancelled') ? '<button class="danger" data-st="cancelled">Отменить заказ</button>' : ''}
+    </div>` : ''}
+    <button class="ghost sm" id="o-del" style="margin-top:14px">Удалить запись</button>`, (el) => {
+    $('#oe', el).onsubmit = guard(async (e) => { e.preventDefault(); await api('saveOrder', o.id, formData(e.target)); closeSheet(); toast('Сохранено'); rerender(); });
+    $$('[data-st]', el).forEach((b) => (b.onclick = guard(async () => {
+      const st = b.dataset.st;
+      if (st === 'shipped') return shipForm(o);
+      if (st === 'returned') return returnForm(o);
+      if (st === 'cancelled' && !(await ask('Отменить заказ? Вещь вернётся на склад.', 'Отменить заказ'))) return orderSheet(o);
+      closeSheet(); await changeStatus(o, st);
+    })));
+    $('#o-del', el).onclick = guard(async () => {
+      if (!(await ask('Удалить запись о заказе совсем? Лучше отменить заказ — так сохранится история.'))) return orderSheet(o);
+      await api('delOrder', o.id); rerender();
+    });
+  });
+}
+
+let ordersTab = 'open';
+async function viewOrders() {
+  const [orders, expenses] = await Promise.all([api('orders'), api('expenses')]);
+  const tabs = [
+    ['open', 'В работе', (o) => o.status === 'ordered' || o.status === 'shipped'],
+    ['sold', 'Проданы', (o) => o.status === 'sold'],
+    ['returned', 'Возвраты', (o) => o.status === 'returned'],
+    ['cancelled', 'Отменены', (o) => o.status === 'cancelled'],
+  ];
+  const count = Object.fromEntries(tabs.map(([k, , f]) => [k, orders.filter(f).length]));
+  const list = orders.filter(tabs.find((t) => t[0] === ordersTab)[2]);
+  const sold = orders.filter((o) => o.status === 'sold');
+  const open = orders.filter((o) => o.status === 'ordered' || o.status === 'shipped');
+  view.innerHTML = `
+    <div class="page-head"><h1>Заказы</h1></div>
+    <div class="grid kpis three" style="margin-bottom:16px">
+      <div class="card kpi"><div class="label">В работе</div><div class="value num">${open.length}</div><div class="hint">на ${rub(open.reduce((a, o) => a + o.price * o.qty, 0))}</div></div>
+      <div class="card kpi"><div class="label">Продано</div><div class="value num">${sold.reduce((a, o) => a + o.qty, 0)} шт</div><div class="hint">${rub(sold.reduce((a, o) => a + o.price * o.qty - (o.extra_cost || 0), 0))}</div></div>
+      <div class="card kpi"><div class="label">Прибыль</div><div class="value num">${rubS(orders.reduce((a, o) => a + (o.profit_rub || 0), 0))}</div></div>
+    </div>
+    <div class="seg" id="otabs" style="margin-bottom:12px">${tabs.map(([k, t]) => `<button data-t="${k}" class="${ordersTab === k ? 'on' : ''}">${t}${count[k] ? ` · ${count[k]}` : ''}</button>`).join('')}</div>
+    ${list.length ? list.map((o) => `
+      <div class="card order" data-oid="${o.id}" role="button" tabindex="0">
+        <div class="thumb sm">${o.photo ? `<img src="${o.photo}" alt="" loading="lazy">` : 'нет<br>фото'}</div>
+        <div class="order-main">
+          <div class="row"><b>${esc(itemName(o))}</b>${STATUS_CHIP[o.status]}</div>
+          <div class="small muted">${o.qty} шт × ${rub(o.price)} · ${fmtDate(o.created_at)}${o.track ? ` · трек ${esc(o.track)}` : ''}${o.buyer ? ` · ${esc(o.buyer)}` : ''}</div>
+          ${o.profit_rub != null ? `<div class="small">Прибыль ${rubS(o.profit_rub)}</div>` : ''}
+        </div>
+        <div class="order-act">
+          ${o.status === 'ordered' ? `<button class="sm primary" data-next="shipped" data-id="${o.id}">Отправил</button>` : ''}
+          ${o.status === 'shipped' ? `<button class="sm primary" data-next="sold" data-id="${o.id}">Продано</button>` : ''}
+        </div>
+      </div>`).join('') : `<div class="card empty"><b>${ordersTab === 'open' ? 'Заказов в работе нет' : 'Пока пусто'}</b>${ordersTab === 'open' ? 'Новый заказ оформляется на складе кнопкой «Новый заказ»' : ''}</div>`}
+
+    <div class="section"><div class="row" style="margin-bottom:8px"><h3 style="margin:0">Расходы</h3><span class="spacer"></span><button class="sm" id="add-exp">+ Расход</button></div>
+      <div class="card">${expenses.length ? expenses.map((e) => `<div class="row" style="padding:3px 0"><span>${esc(e.title)}</span><span class="small muted">${e.batch_name ? esc(e.batch_name) : 'общий'} · ${fmtDate(e.spent_at)}</span><span class="spacer"></span><b class="num">${rub(e.amount)}</b><button class="icon-btn" data-del-exp="${e.id}" aria-label="Удалить">✕</button></div>`).join('')
+        : '<span class="muted small">Продвижение, упаковка и прочее. Учитываются в прибыли.</span>'}</div></div>`;
+  const byId = Object.fromEntries(orders.map((o) => [o.id, o]));
+  $$('#otabs button').forEach((b) => (b.onclick = () => { ordersTab = b.dataset.t; viewOrders(); }));
+  $$('[data-oid]').forEach((card) => {
+    card.onclick = (e) => { if (!e.target.closest('[data-next]')) orderSheet(byId[card.dataset.oid]); };
+    card.onkeydown = (e) => { if (e.key === 'Enter' && e.target === card) orderSheet(byId[card.dataset.oid]); };
+  });
+  $$('[data-next]').forEach((b) => (b.onclick = guard(async () => {
+    const o = byId[b.dataset.id];
+    if (b.dataset.next === 'shipped') return shipForm(o);
+    await changeStatus(o, 'sold');
+  })));
+  $('#add-exp').onclick = () => expenseForm(null);
+  $$('[data-del-exp]').forEach((x) => (x.onclick = guard(async () => { await api('delExpense', x.dataset.delExp); rerender(); })));
+}
+
+'use strict';
+/* Экраны входа и регистрации. После успеха — startApp(session). */
+
+function authShell(title, inner) {
+  document.body.classList.add('auth-mode');
+  view.innerHTML = `
+    <div class="auth">
+      <div class="auth-brand">${BRAND_SVG}<span>Marginly</span></div>
+      <p class="auth-tag">Учёт партий из Китая: карго, себестоимость, склад и прибыль</p>
+      <div class="card auth-card">
+        <h1>${esc(title)}</h1>
+        ${inner}
+      </div>
+    </div>`;
+}
+
+const authState = { email: '' };
+
+function authError(el, e) { el.textContent = e.message || String(e); el.hidden = false; }
+
+function bindForm(handler) {
+  const f = $('#auth-form'), err = $('#auth-err'), btn = $('#auth-form button[type=submit]');
+  f.onsubmit = async (e) => {
+    e.preventDefault();
+    err.hidden = true; btn.disabled = true;
+    try { await handler(formData(f)); } catch (x) { authError(err, x); } finally { btn.disabled = false; }
+  };
+}
+
+function finishAuth(res, email) {
+  const session = { token: res.token, email: res.user.email || email };
+  saveSession(session);
+  document.body.classList.remove('auth-mode');
+  startApp(session, res.user.plan);
+}
+
+function showLogin(msg) {
+  authShell('Вход', `
+    ${msg ? `<p class="auth-note">${esc(msg)}</p>` : ''}
+    <form id="auth-form" novalidate>
+      <label class="f"><span>Почта</span><input id="a-email" name="email" type="email" autocomplete="email" required value="${esc(authState.email)}"></label>
+      <label class="f"><span>Пароль</span><input id="a-pass" name="password" type="password" autocomplete="current-password" required></label>
+      <p class="neg small" id="auth-err" hidden></p>
+      <button type="submit" class="primary block">Войти</button>
+    </form>
+    <div class="auth-links"><a href="#" id="go-register">Регистрация</a><a href="#" id="go-forgot">Забыли пароль?</a></div>`);
+  bindForm(async (d) => {
+    authState.email = d.email;
+    try {
+      finishAuth(await http('/api/auth/login', { method: 'POST', body: d }), d.email);
+    } catch (e) {
+      if (e.status === 403) return showVerify(d.email, e.message);
+      throw e;
+    }
+  });
+  $('#go-register').onclick = (e) => { e.preventDefault(); showRegister(); };
+  $('#go-forgot').onclick = (e) => { e.preventDefault(); showForgot(); };
+}
+
+function showRegister() {
+  authShell('Регистрация', `
+    <p class="auth-note">Первая неделя бесплатно: 1 партия и до 10 товаров. Дальше — ${PRICE_RUB} ₽ в месяц.</p>
+    <form id="auth-form" novalidate>
+      <label class="f"><span>Почта</span><input id="r-email" name="email" type="email" autocomplete="email" required value="${esc(authState.email)}"></label>
+      <label class="f"><span>Пароль, от 8 символов</span><input id="r-pass" name="password" type="password" autocomplete="new-password" minlength="8" required></label>
+      <label class="check"><input type="checkbox" id="r-agree" name="agree"> <span>Принимаю <a href="${LEGAL.terms}" target="_blank" rel="noopener">условия</a> и <a href="${LEGAL.privacy}" target="_blank" rel="noopener">политику конфиденциальности</a>, даю согласие на обработку персональных данных</span></label>
+      <p class="neg small" id="auth-err" hidden></p>
+      <button type="submit" class="primary block">Зарегистрироваться</button>
+    </form>
+    <div class="auth-links"><a href="#" id="go-login">У меня уже есть аккаунт</a></div>`);
+  bindForm(async (d) => {
+    if (!d.agree) throw new Error('Нужно принять условия и дать согласие на обработку данных');
+    if ((d.password || '').length < 8) throw new Error('Пароль должен быть не короче 8 символов');
+    authState.email = d.email;
+    await http('/api/auth/register', { method: 'POST', body: { email: d.email, password: d.password } });
+    showVerify(d.email);
+  });
+  $('#go-login').onclick = (e) => { e.preventDefault(); showLogin(); };
+}
+
+function showVerify(email, msg) {
+  authShell('Подтверди почту', `
+    <p class="auth-note">${esc(msg || 'Мы отправили 6-значный код на')} <b>${esc(email)}</b>. Если письма нет, проверь «Спам».</p>
+    <form id="auth-form" novalidate>
+      <label class="f"><span>Код из письма</span><input id="v-code" name="code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" required class="code-input"></label>
+      <p class="neg small" id="auth-err" hidden></p>
+      <button type="submit" class="primary block">Подтвердить</button>
+    </form>
+    <div class="auth-links"><a href="#" id="resend">Отправить код ещё раз</a><a href="#" id="go-login">Назад</a></div>`);
+  bindForm(async (d) => finishAuth(await http('/api/auth/verify', { method: 'POST', body: { email, code: d.code } }), email));
+  $('#resend').onclick = async (e) => {
+    e.preventDefault();
+    try { await http('/api/auth/resend', { method: 'POST', body: { email } }); toast('Код отправлен ещё раз'); } catch (x) { toast(x.message); }
+  };
+  $('#go-login').onclick = (e) => { e.preventDefault(); showLogin(); };
+}
+
+function showForgot() {
+  authShell('Сброс пароля', `
+    <p class="auth-note">Пришлём код на почту, и ты задашь новый пароль.</p>
+    <form id="auth-form" novalidate>
+      <label class="f"><span>Почта</span><input id="f-email" name="email" type="email" autocomplete="email" required value="${esc(authState.email)}"></label>
+      <p class="neg small" id="auth-err" hidden></p>
+      <button type="submit" class="primary block">Прислать код</button>
+    </form>
+    <div class="auth-links"><a href="#" id="go-login">Назад ко входу</a></div>`);
+  bindForm(async (d) => {
+    authState.email = d.email;
+    await http('/api/auth/forgot', { method: 'POST', body: { email: d.email } });
+    showReset(d.email);
+  });
+  $('#go-login').onclick = (e) => { e.preventDefault(); showLogin(); };
+}
+
+function showReset(email) {
+  authShell('Новый пароль', `
+    <p class="auth-note">Если почта <b>${esc(email)}</b> зарегистрирована, на неё пришёл код.</p>
+    <form id="auth-form" novalidate>
+      <label class="f"><span>Код из письма</span><input id="p-code" name="code" inputmode="numeric" maxlength="6" required class="code-input"></label>
+      <label class="f"><span>Новый пароль, от 8 символов</span><input id="p-pass" name="password" type="password" autocomplete="new-password" minlength="8" required></label>
+      <p class="neg small" id="auth-err" hidden></p>
+      <button type="submit" class="primary block">Сохранить и войти</button>
+    </form>
+    <div class="auth-links"><a href="#" id="go-login">Назад ко входу</a></div>`);
+  bindForm(async (d) => finishAuth(await http('/api/auth/reset', { method: 'POST', body: { email, code: d.code, password: d.password } }), email));
+  $('#go-login').onclick = (e) => { e.preventDefault(); showLogin(); };
+}
+
+'use strict';
+/* Запуск Marginly: вход → синхронизация → интерфейс. Аккаунт, тариф, плашки состояния. */
+
+const PRICE_RUB = 499;
+const LEGAL = { terms: '/legal/terms.html', privacy: '/legal/privacy.html' };
+const BRAND_SVG = '<svg viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="12" fill="#15171a"/><path d="M13 46V20l13 15 12-15v26" fill="none" stroke="#fff" stroke-width="6" stroke-linejoin="miter" stroke-linecap="square"/><path d="M42 33l9-11" stroke="#ffd21f" stroke-width="6" stroke-linecap="square"/><path d="M44 21h8v8" fill="none" stroke="#ffd21f" stroke-width="6" stroke-linecap="square"/></svg>';
+
+let SESSION = null;
+let SYNC_STATE = 'online';
+
+const REJECT_TEXT = {
+  trial_limit: 'В пробный период — 1 партия и до 10 товаров. Лишнее не сохранилось',
+  subscription_required: 'Пробный период закончился — изменения не сохранились. Оформи подписку',
+  too_large: 'Запись слишком большая и не сохранилась',
+  bad_path: 'Часть данных не сохранилась',
+};
+
+function planText(p) {
+  if (!p) return 'Загружаю тариф…';
+  if (p.status === 'active') return `Подписка активна до ${fmtDate(p.paid_until.slice(0, 10))}`;
+  if (p.status === 'trial') {
+    const left = Math.max(0, Math.ceil((new Date(p.trial_ends_at) - Date.now()) / 86400000));
+    return `Пробный период: осталось ${left} ${plural(left, 'день', 'дня', 'дней')} · 1 партия и до 10 товаров`;
+  }
+  return 'Пробный период закончился — данные только для просмотра';
+}
+
+function renderBanner() {
+  const el = $('#banner');
+  if (!el) return;
+  const p = S.plan;
+  let html = '';
+  if (p?.status === 'expired') {
+    html = `<div class="banner bad">Пробный период закончился — можно только смотреть. <a href="#options">Оформить подписку — ${PRICE_RUB} ₽/мес</a></div>`;
+  } else if (p?.status === 'trial') {
+    const left = Math.ceil((new Date(p.trial_ends_at) - Date.now()) / 86400000);
+    if (left <= 2) html = `<div class="banner">Пробный период закончится через ${left} ${plural(left, 'день', 'дня', 'дней')}. <a href="#options">Оформить подписку</a></div>`;
+  }
+  if (SYNC_STATE === 'offline') html += '<div class="banner muted">Нет связи с сервером — изменения сохранены на устройстве и отправятся позже</div>';
+  el.innerHTML = html;
+  el.hidden = !html;
+}
+
+function accountSection() {
+  const p = S.plan;
+  const pending = DB?.pendingCount?.() || 0;
+  return `
+    <div class="section"><h3>Аккаунт и тариф</h3><div class="card">
+      <div class="calc">
+        <span class="k">Почта</span><span class="v">${esc(S.email)}</span>
+        <span class="k">Тариф</span><span class="v">${p?.status === 'active' ? 'Подписка' : p?.status === 'trial' ? 'Пробный' : 'Закончился'}</span>
+        <span class="k">Синхронизация</span><span class="v">${SYNC_STATE === 'offline' ? `<span class="neg">нет связи${pending ? `, ждут отправки: ${pending}` : ''}</span>` : '<span class="pos">всё сохранено</span>'}</span>
+      </div>
+      <p class="hint-line" style="margin:12px 0">${esc(planText(p))}</p>
+      ${p?.status !== 'active' ? `<button class="primary" id="subscribe">Оформить подписку — ${PRICE_RUB} ₽/мес</button>` : ''}
+      <div class="row" style="margin-top:14px">
+        <button id="logout">Выйти</button>
+        <span class="spacer"></span>
+        <button class="ghost sm" id="del-acc">Удалить аккаунт</button>
+      </div>
+    </div></div>`;
+}
+
+function bindAccountSection() {
+  $('#subscribe')?.addEventListener('click', () => toast('Оплата подключается на следующем этапе'));
+  $('#logout')?.addEventListener('click', guard(async () => {
+    if (DB?.pendingCount?.() && !(await ask('Часть изменений ещё не отправлена на сервер. Если выйти сейчас, они пропадут.', 'Всё равно выйти'))) return;
+    await logout();
+  }));
+  $('#del-acc')?.addEventListener('click', () => openSheet('Удалить аккаунт', `
+    <p style="margin-top:0">Аккаунт, все партии, заказы и фото удалятся навсегда. Восстановить их будет нельзя.</p>
+    <form id="da">
+      <label class="f"><span>Пароль для подтверждения</span><input name="password" type="password" autocomplete="current-password" required></label>
+      <button class="danger block">Удалить навсегда</button>
+    </form>`, (el) => {
+    $('#da', el).onsubmit = guard(async (e) => {
+      e.preventDefault();
+      await http('/api/me', { method: 'DELETE', token: SESSION.token, body: { password: formData(e.target).password } });
+      DB?.wipe?.();
+      closeSheet();
+      await logout('Аккаунт удалён');
+    });
+  }));
+}
+
+async function logout(msg) {
+  if (SESSION) { try { await http('/api/auth/logout', { method: 'POST', token: SESSION.token }); } catch { /* офлайн — не страшно */ } }
+  saveSession(null);
+  if (msg) sessionStorage.setItem('mg:msg', msg);
+  location.reload();
+}
+
+async function ensureDefaults() {
+  if (!canWrite()) return;
+  if (!S.categories.size) await ops.addDefaultCategories();
+  if (!Object.keys(S.settings).length) await DB.doc('app/settings').set({ ...DEFAULTS });
+}
+
+async function refreshRate() {
+  try {
+    const r = await http('/api/rate');
+    if (r?.rate > 0 && canWrite()) { if (await ops.setCbrRate(r.rate, r.date)) onStoreChange(); }
+  } catch { /* без сети курс подтянется позже */ }
+}
+
+async function startApp(session, plan) {
+  SESSION = session;
+  S.email = session.email;
+  try { S.plan = plan || JSON.parse(localStorage.getItem('mg:plan:' + session.email)) || null; } catch { S.plan = plan || null; }
+  document.body.classList.remove('auth-mode');
+  view.innerHTML = '<div class="empty"><b>Загружаю данные…</b></div>';
+  DB = makeSyncDb({
+    token: session.token,
+    email: session.email,
+    onPlan: (p) => { S.plan = p; try { localStorage.setItem('mg:plan:' + session.email, JSON.stringify(p)); } catch { /* */ } renderBanner(); },
+    onRejected: (reasons) => toast(REJECT_TEXT[reasons[0]] || 'Часть изменений не сохранилась'),
+    onStatus: (st) => { if (st !== SYNC_STATE) { SYNC_STATE = st; renderBanner(); } },
+    onAuthLost: () => { saveSession(null); sessionStorage.setItem('mg:msg', 'Сессия закончилась. Войди заново'); location.reload(); },
+  });
+  ASSETS = makeRemoteAssets(session.token);
+  connectStore(onStoreChange);
+  if (DB.isEmpty()) await DB.syncNow(); else DB.syncNow();
+  await ensureDefaults();
+  renderBanner();
+  render();
+  refreshRate();
+}
+
+// Кнопка «Назад» на Android: сначала закрывает фото и окна, потом листает назад.
+window.__onBack = () => {
+  if (!$('#lightbox').hidden) { $('#lightbox').hidden = true; return true; }
+  if (!$('#sheet').hidden) { closeSheet(); return true; }
+  return false;
+};
+
+(function boot() {
+  const s = loadSession();
+  const msg = sessionStorage.getItem('mg:msg');
+  sessionStorage.removeItem('mg:msg');
+  if (s?.token) startApp(s);
+  else showLogin(msg);
+})();
+
+</script>
+</body>
+</html>
