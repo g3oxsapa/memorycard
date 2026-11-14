@@ -528,6 +528,7 @@ async function viewSettings() {
       <p class="hint-line" style="margin-top:8px">Меняется сразу при выходе из поля. Вес у уже добавленных товаров не меняется — его можно поправить в самом товаре.</p>
     </div>
 
+    ${themeSection()}
     ${accountSection()}`;
 
   $('#setf').onsubmit = guard(async (e) => {

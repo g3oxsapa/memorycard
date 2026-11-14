@@ -1611,6 +1611,7 @@ async function viewSettings() {
       <p class="hint-line" style="margin-top:8px">Меняется сразу при выходе из поля. Вес у уже добавленных товаров не меняется — его можно поправить в самом товаре.</p>
     </div>
 
+    ${themeSection()}
     ${accountSection()}`;
 
   $('#setf').onsubmit = guard(async (e) => {
@@ -1979,6 +1980,28 @@ const LEGAL = { terms: '/legal/terms.html', privacy: '/legal/privacy.html' };
 const BRAND_SVG = '<svg viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="12" fill="#15171a"/><path d="M13 46V20l13 15 12-15v26" fill="none" stroke="#fff" stroke-width="6" stroke-linejoin="miter" stroke-linecap="square"/><path d="M42 33l9-11" stroke="#ffd21f" stroke-width="6" stroke-linecap="square"/><path d="M44 21h8v8" fill="none" stroke="#ffd21f" stroke-width="6" stroke-linecap="square"/></svg>';
 
 let SESSION = null;
+
+/* ── тема: по умолчанию как в системе, выбор хранится на устройстве ── */
+const THEMES = [['system', 'Как в системе'], ['light', 'Светлая'], ['dark', 'Тёмная']];
+function getTheme() { try { const t = localStorage.getItem('mg:theme'); return t === 'light' || t === 'dark' ? t : 'system'; } catch { return 'system'; } }
+function applyTheme(t) {
+  if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
+  else document.documentElement.removeAttribute('data-theme');
+}
+function setTheme(t) {
+  try { if (t === 'system') localStorage.removeItem('mg:theme'); else localStorage.setItem('mg:theme', t); } catch { /* приватный режим */ }
+  applyTheme(t);
+}
+applyTheme(getTheme());
+
+function themeSection() {
+  const cur = getTheme();
+  return `
+    <div class="section"><h3>Оформление</h3><div class="card">
+      <div class="seg" id="theme-seg">${THEMES.map(([k, t]) => `<button data-theme-set="${k}" class="${cur === k ? 'on' : ''}">${t}</button>`).join('')}</div>
+      <p class="hint-line" style="margin:10px 0 0">«Как в системе» — тема меняется вместе с телефоном или компьютером. Выбор сохраняется на этом устройстве.</p>
+    </div></div>`;
+}
 let SYNC_STATE = 'online';
 
 const REJECT_TEXT = {
@@ -2040,6 +2063,10 @@ function accountSection() {
 }
 
 function bindAccountSection() {
+  $$('[data-theme-set]').forEach((b) => (b.onclick = () => {
+    setTheme(b.dataset.themeSet);
+    $$('[data-theme-set]').forEach((x) => x.classList.toggle('on', x === b));
+  }));
   $('#demo-exit')?.addEventListener('click', () => { saveSession(null); sessionStorage.setItem('mg:msg', 'Зарегистрируйся, чтобы данные сохранялись на сервере'); location.reload(); });
   $('#subscribe')?.addEventListener('click', () => toast('Оплата подключается на следующем этапе'));
   $('#logout')?.addEventListener('click', guard(async () => {
