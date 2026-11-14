@@ -23,3 +23,16 @@ uvicorn app.main:app --port 8080
 pip install pytest httpx
 python -m pytest
 ```
+
+## Почта для кодов
+
+Письма уходят с `marginly.app@gmail.com` через пароль приложения Google.
+На сервере задаются переменные окружения (пароль в репозиторий не кладём):
+
+```
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=465
+SMTP_USER=marginly.app@gmail.com
+SMTP_PASSWORD=<пароль приложения из 16 букв>
+MAIL_FROM=Marginly <marginly.app@gmail.com>
+```

@@ -35,11 +35,11 @@ MAX_PHOTO_BYTES = 8 * 1024 * 1024
 MAX_SYNC_CHANGES = 500
 
 # Почта. Без SMTP_HOST письма не отправляются, а пишутся в журнал (тестовый режим).
-SMTP_HOST = os.environ.get("SMTP_HOST", "")
+SMTP_HOST = os.environ.get("SMTP_HOST", "")  # Gmail: smtp.gmail.com, порт 465, пароль приложения
 SMTP_PORT = int(os.environ.get("SMTP_PORT", "465"))
 SMTP_USER = os.environ.get("SMTP_USER", "")
 SMTP_PASSWORD = os.environ.get("SMTP_PASSWORD", "")
-MAIL_FROM = os.environ.get("MAIL_FROM", "Marginly <no-reply@marginly.ru>")
+MAIL_FROM = os.environ.get("MAIL_FROM", "Marginly <marginly.app@gmail.com>")
 
 CORS_ORIGINS = [o for o in os.environ.get(
     "MARGINLY_CORS", "https://appassets.androidplatform.net,http://localhost:8000").split(",") if o]
