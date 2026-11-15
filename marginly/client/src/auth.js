@@ -64,16 +64,19 @@ function showLogin(msg) {
 
 function showServer() {
   authShell('Адрес сервера', `
-    <p class="auth-note">Обычно менять не нужно. Адрес сервера Marginly появится, когда сервис запустится.</p>
+    <p class="auth-note">Обычно менять не нужно. Для проверки с сервером на своём компьютере впиши его адрес в домашней сети, например <b>http://192.168.1.5:8080</b> — телефон и компьютер должны быть в одной Wi-Fi.</p>
     <form id="auth-form" novalidate>
-      <label class="f"><span>Адрес</span><input name="url" type="url" placeholder="https://api.marginly.ru" value="${esc(API_BASE)}"></label>
+      <label class="f"><span>Адрес</span><input name="url" type="url" placeholder="http://192.168.1.5:8080" value="${esc(API_BASE)}"></label>
       <p class="neg small" id="auth-err" hidden></p>
       <button type="submit" class="primary block">Сохранить</button>
     </form>
     <div class="auth-links"><a href="#" id="go-login">Назад</a></div>`);
   bindForm(async (d) => {
     const url = (d.url || '').trim().replace(/\/+$/, '');
-    if (url && !/^https:\/\/[^\s/]+/.test(url)) throw new Error('Адрес должен начинаться с https://');
+    const lan = /^http:\/\/(localhost|127\.|10\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.)[^\s/]*$/;
+    if (url && !/^https:\/\/[^\s/]+/.test(url) && !lan.test(url)) {
+      throw new Error('Адрес должен начинаться с https://. Адрес http:// можно только для компьютера в домашней сети, например http://192.168.1.5:8080');
+    }
     try { url ? localStorage.setItem('mg:api', url) : localStorage.removeItem('mg:api'); } catch { /* */ }
     API_BASE = url;
     showLogin(url ? 'Адрес сохранён' : 'Адрес сброшен');

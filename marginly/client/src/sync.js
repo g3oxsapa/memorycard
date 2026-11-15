@@ -13,6 +13,48 @@ class HttpError extends Error {
   constructor(status, message) { super(message); this.status = status; this.user = true; }
 }
 
+/* В Android-приложении запросы к серверу делает Java-часть (window.AndroidNet):
+   так нет ограничений WebView на http:// и домашнюю сеть. Ответ приходит в window.__netDone. */
+const NET_WAIT = new Map();
+let NET_SEQ = 0;
+window.__netDone = (id, status, contentType, text) => {
+  const w = NET_WAIT.get(id);
+  if (!w) return;
+  NET_WAIT.delete(id);
+  w({ status, contentType, text });
+};
+function toBase64(bytes) {
+  let bin = '';
+  for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
+  return btoa(bin);
+}
+async function nativeFetch(url, method, headers, bodyBytes) {
+  const id = 'r' + (++NET_SEQ);
+  const done = new Promise((resolve) => NET_WAIT.set(id, resolve));
+  window.AndroidNet.request(id, method, url, JSON.stringify(headers), bodyBytes ? toBase64(bodyBytes) : '');
+  const r = await done;
+  if (r.status === 0) throw new Error(r.text || 'network');
+  return {
+    ok: r.status >= 200 && r.status < 300,
+    status: r.status,
+    headers: { get: (k) => (k.toLowerCase() === 'content-type' ? r.contentType : null) },
+    json: async () => JSON.parse(r.text),
+  };
+}
+async function multipartBytes(form) {
+  const boundary = '----marginly' + Math.random().toString(36).slice(2);
+  const parts = [];
+  for (const [name, value] of form.entries()) {
+    if (value instanceof Blob) {
+      parts.push(`--${boundary}\r\nContent-Disposition: form-data; name="${name}"; filename="${value.name || 'file.jpg'}"\r\nContent-Type: ${value.type || 'application/octet-stream'}\r\n\r\n`, value, '\r\n');
+    } else {
+      parts.push(`--${boundary}\r\nContent-Disposition: form-data; name="${name}"\r\n\r\n${value}\r\n`);
+    }
+  }
+  parts.push(`--${boundary}--\r\n`);
+  return { bytes: new Uint8Array(await new Blob(parts).arrayBuffer()), type: 'multipart/form-data; boundary=' + boundary };
+}
+
 async function http(path, { method = 'GET', body, token, form } = {}) {
   if (!API_BASE && window.__APP_ANDROID) throw new HttpError(0, 'Сервер Marginly ещё не запущен. Попробуй демо-режим — без регистрации');
   const headers = {};
@@ -20,7 +62,14 @@ async function http(path, { method = 'GET', body, token, form } = {}) {
   if (body !== undefined && !form) headers['Content-Type'] = 'application/json';
   let res;
   try {
-    res = await fetch(API_BASE + path, { method, headers, body: form || (body !== undefined ? JSON.stringify(body) : undefined) });
+    if (window.AndroidNet) {
+      let bytes = null;
+      if (form) { const m = await multipartBytes(form); bytes = m.bytes; headers['Content-Type'] = m.type; }
+      else if (body !== undefined) bytes = new TextEncoder().encode(JSON.stringify(body));
+      res = await nativeFetch(API_BASE + path, method, headers, bytes);
+    } else {
+      res = await fetch(API_BASE + path, { method, headers, body: form || (body !== undefined ? JSON.stringify(body) : undefined) });
+    }
   } catch {
     throw new HttpError(0, 'Нет связи с сервером. Проверь интернет');
   }

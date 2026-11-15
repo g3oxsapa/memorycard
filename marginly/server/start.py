@@ -82,12 +82,22 @@ def free_port(start=8080):
 
 
 def lan_ip():
+    """Адрес в домашней сети (192.168…, 10…, 172.16–31…), а не адрес VPN."""
+    import ipaddress
+    cands = set()
+    try:
+        cands.update(i[4][0] for i in socket.getaddrinfo(socket.gethostname(), None, socket.AF_INET))
+    except OSError:
+        pass
     try:
         with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
             s.connect(("8.8.8.8", 80))
-            return s.getsockname()[0]
+            cands.add(s.getsockname()[0])
     except OSError:
-        return None
+        pass
+    home = [c for c in cands if ipaddress.ip_address(c).is_private and not c.startswith(("127.", "198.18.", "198.19."))]
+    home.sort(key=lambda c: (not c.startswith("192.168."), c))
+    return home[0] if home else None
 
 
 def open_when_ready(url):

@@ -16,10 +16,22 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
+import android.util.Base64;
+import android.webkit.JavascriptInterface;
+
 import androidx.core.content.FileProvider;
 import androidx.webkit.WebViewAssetLoader;
 
+import org.json.JSONObject;
+
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.util.Iterator;
 import java.util.ArrayList;
 
 /** Marginly: интерфейс лежит внутри приложения, данные синхронизируются с сервером Marginly. */
@@ -50,10 +62,25 @@ public class MainActivity extends Activity {
         s.setDomStorageEnabled(true);
         s.setAllowFileAccess(false);
         s.setAllowContentAccess(false);
+        // Для проверки с сервером на компьютере в домашней сети (http://192.168…). Боевой сервер — https.
+        s.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
+        web.addJavascriptInterface(new Net(), "AndroidNet");
         web.setWebViewClient(new WebViewClient() {
             @Override
             public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest req) {
-                return loader.shouldInterceptRequest(req.getUrl());
+                Uri u = req.getUrl();
+                if (!HOST.equals(u.getHost()) && "GET".equals(req.getMethod()) && u.getPath() != null && u.getPath().startsWith("/api/blobs/")) {
+                    try {
+                        HttpURLConnection c = (HttpURLConnection) new URL(u.toString()).openConnection();
+                        c.setConnectTimeout(10000);
+                        c.setReadTimeout(20000);
+                        return new WebResourceResponse("image/jpeg", null, c.getResponseCode(), "OK",
+                                java.util.Collections.singletonMap("Cache-Control", "max-age=31536000"), c.getInputStream());
+                    } catch (Exception e) {
+                        return null;
+                    }
+                }
+                return loader.shouldInterceptRequest(u);
             }
 
             @Override
@@ -141,5 +168,55 @@ public class MainActivity extends Activity {
         }
         fileCallback.onReceiveValue(uris);
         fileCallback = null;
+    }
+
+    /** Запросы к серверу Marginly из страницы: request(id, …) → window.__netDone(id, status, type, text). */
+    private class Net {
+        @JavascriptInterface
+        public void request(final String id, final String method, final String url, final String headersJson, final String bodyB64) {
+            new Thread(() -> {
+                int status = 0;
+                String type = "";
+                String text = "";
+                HttpURLConnection c = null;
+                try {
+                    if (!url.startsWith("https://") && !url.startsWith("http://")) throw new Exception("bad url");
+                    c = (HttpURLConnection) new URL(url).openConnection();
+                    c.setConnectTimeout(10000);
+                    c.setReadTimeout(30000);
+                    c.setRequestMethod(method);
+                    JSONObject h = new JSONObject(headersJson == null || headersJson.isEmpty() ? "{}" : headersJson);
+                    for (Iterator<String> it = h.keys(); it.hasNext(); ) {
+                        String k = it.next();
+                        c.setRequestProperty(k, h.getString(k));
+                    }
+                    if (bodyB64 != null && !bodyB64.isEmpty()) {
+                        byte[] body = Base64.decode(bodyB64, Base64.DEFAULT);
+                        c.setDoOutput(true);
+                        c.setFixedLengthStreamingMode(body.length);
+                        try (OutputStream out = c.getOutputStream()) { out.write(body); }
+                    }
+                    status = c.getResponseCode();
+                    type = c.getContentType() == null ? "" : c.getContentType();
+                    InputStream in = status >= 400 ? c.getErrorStream() : c.getInputStream();
+                    if (in != null) {
+                        try (InputStream src = in) {
+                            ByteArrayOutputStream buf = new ByteArrayOutputStream();
+                            byte[] chunk = new byte[16384];
+                            int n;
+                            while ((n = src.read(chunk)) > 0) buf.write(chunk, 0, n);
+                            text = new String(buf.toByteArray(), StandardCharsets.UTF_8);
+                        }
+                    }
+                } catch (Exception e) {
+                    status = 0;
+                    text = String.valueOf(e.getMessage());
+                } finally {
+                    if (c != null) c.disconnect();
+                }
+                final String js = "window.__netDone(" + JSONObject.quote(id) + "," + status + "," + JSONObject.quote(type) + "," + JSONObject.quote(text) + ")";
+                runOnUiThread(() -> web.evaluateJavascript(js, null));
+            }).start();
+        }
     }
 }
